@@ -29,26 +29,27 @@ lbfgsb3 <- function(prm, fn, gr=NULL, lower = -Inf, upper = Inf,
        'WARNING: STP .eq. STPMIN', # 25
        'WARNING: XTOL TEST SATISFIED')# 26
 # CONV in 6, 7, 8; ERROR in 9-19; WARN in 23-26
- 
+
 # if (!is.loaded("lbfgsb3.so")) dyn.load("lbfgsb3.so") # get the routines attached
 
 # control defaults -- idea from spg
-ctrl <- list(maxit = 500, trace = 0, iprint = 0L)
+    ctrl <- list(maxit = 500, trace = 0, iprint = 0L,
+                 factr=1.0e+7, pgtol=1.0e-5, nmax=1024L, mmax=17L);
     namc <- names(control)
-    if (!all(namc %in% names(ctrl))) 
+    if (!all(namc %in% names(ctrl)))
         stop("unknown names in control: ", namc[!(namc %in% names(ctrl))])
     ctrl[namc] <- control
 
 
 # Here expand control list, but for moment leave alone
       iprint <- as.integer(ctrl$iprint)
-      factr <- 1.0e+7
-      pgtol <- 1.0e-5
+      factr <- as.double(ctrl$factr)
+      pgtol <- as.double(ctrl$pgtol)
       nmax <- 1024L
       mmax <- 17L
 if (length(prm) > nmax) stop("The number of parameters cannot exceed 1024")
       n <- as.integer(length(prm))
-      m <- 5L # default 
+      m <- 5L # default
 ## Define the storage
 nbd <- rep(2L, n) # start by defining them "on" -- adjust below
 nwa<-2*mmax*nmax + 5*nmax + 11*mmax*mmax + 8*mmax
@@ -76,7 +77,7 @@ for (i in 1:n) {
               nbd[i] <- 3
               lower[i] <- -bigval
             } else {
-              nbd[i] <- 0 
+              nbd[i] <- 0
               upper[i] <- bigval
               lower[i] <- -bigval
                  }
@@ -87,7 +88,7 @@ for (i in 1:n) {
 
 
 ##     We start the iteration by initializing task.
-## 
+##
       itask <- 2L # START
       task <- tasklist[itask]
       f <- .Machine$double.xmax / 100
@@ -107,10 +108,10 @@ repeat {
                    x = as.double(prm), l = as.double(lower), u = as.double(upper),
                    nbd = as.integer(nbd), f = as.double(f), g = as.double(g),
                    factr = as.double(factr), pgtol = as.double(pgtol),
-                   wa = as.double(wa), iwa = as.integer(iwa), 
+                   wa = as.double(wa), iwa = as.integer(iwa),
                    itask = as.integer(itask),
                    iprint = as.integer(iprint),
-                   icsave = as.integer(icsave), lsave=as.logical(lsave), 
+                   icsave = as.integer(icsave), lsave=as.logical(lsave),
                    isave=as.integer(isave), dsave=as.double(dsave))
       itask <- result$itask
       icsave <- result$icsave
@@ -161,7 +162,7 @@ repeat {
  } # end repeat
 ## Here build return structure
 ##  print(result) ## only print for debugging
-  info <- list(task = task, itask = itask, lsave = lsave, 
+  info <- list(task = task, itask = itask, lsave = lsave,
                 icsave = icsave, dsave = dsave, isave = isave)
   ans <- list(prm = prm, f = f, g = g, info = info)
 ##======================= The end of driver1 ============================
