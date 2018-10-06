@@ -1,169 +1,130 @@
-lbfgsb3 <- function(prm, fn, gr=NULL, lower = -Inf, upper = Inf,
-         control=list(), ...){
+##' @importFrom Rcpp evalCpp
+##' @useDynLib lbfgsb3c, .registration=TRUE
+"lbfgsb3c"
+
+
+##' Interfacing wrapper for the Nocedal - Morales LBFGSB3 (Fortran) limited memory BFGS solver.
+##'
+##' @param par A parameter vector which gives the initial guesses to
+##'     the parameters that will minimize \code{fn}. This can be
+##'     named, for example, we could use par=c(b1=1, b2=2.345,
+##'     b3=0.123)
+##' @param fn A function that evaluates the objective function to be
+##'     minimized.  This can be a R function or a Rcpp function
+##'     pointer.
+##' @param gr If present, a function that evaluates the gradient
+##'     vector for the objective function at the given parameters
+##'     computing the elements of the sum of squares function at the
+##'     set of parameters \code{start}. This can be a R function or a
+##'     Rcpp function pointer.
+##' @param lower Lower bounds on the parameters. If a single number,
+##'     this will be applied to all parameters. Default -Inf.
+##' @param upper Upper bounds on the parameters. If a single number,
+##'     this will be applied to all parameters. Default Inf.
+##' @param control An optional list of control settings. See below in
+##'     details.
+##' @param ... Any data needed for computation of the objective
+##'     function and gradient.
+##' @param rho An Environment to use for function evaluation.  If
+##'     present the arguments in ... are ignored.  Otherwise the
+##'     ... are converted to an environment for evaluation.
+##' @details
+##'
+##' See the notes below for a general appreciation of this package.
+##'
+##' @return
+##'   A list of the following items
+##' \itemize{
+##' \item{par} The best set of parameters found.
+##' \item{value} The value of fn corresponding to par.
+##' \item{counts} A two-element integer vector giving the number of calls to fn and gr respectively. This excludes any calls to fn to compute a finite-difference approximation to the gradient.
+##' \item{convergence} An integer code. 0 indicates successful completion
+##' }
+##' @seealso Packages \code{\link{optim}} and \code{optimx}.
+##' @keywords nonlinear parameter optimization
+##' @author Matthew Fidler (move to C and add more options for adjustments),
+##'     John C Nash <nashjc@uottawa.ca> (of the wrapper and edits to Fortran code to allow R output)
+##'     Ciyou Zhu, Richard Byrd, Jorge Nocedal, Jose Luis Morales (original Fortran packages)
+##'
+##' @references
+##'     Morales, J. L.; Nocedal, J. (2011). "Remark on 'algorithm 778: L-BFGS-B:
+##'           Fortran subroutines for large-scale bound constrained optimization' ".
+##'           ACM Transactions on Mathematical Software 38: 1.
+##'
+##'     Byrd, R. H.; Lu, P.; Nocedal, J.; Zhu, C. (1995). "A Limited Memory Algorithm
+##'           for Bound Constrained Optimization". SIAM J. Sci. Comput. 16 (5): 1190-1208.
+##'
+##'     Zhu, C.; Byrd, Richard H.; Lu, Peihuang; Nocedal, Jorge (1997). "L-BFGS-B:
+##'           Algorithm 778: L-BFGS-B, FORTRAN routines for large scale bound constrained
+##'           optimization". ACM Transactions on Mathematical Software 23 (4): 550-560.
+##'
+##' @note
+##'   This package is a wrapper to the Fortran code released by Nocedal and Morales.
+##'   This poses several difficulties for an R package. While the \code{.Fortran()}
+##'   tool exists for the interfacing, we must be very careful to align the arguments
+##'   with those of the Fortran subroutine, especially in type and storage.
+##'
+##'   A more annoying task for interfacing the Fortran code is that Fortran WRITE or
+##'   PRINT statements must all be replaced with calls to special R-friendly output
+##'   routines. Unfortunately, the Fortran is full of output statements. Worse, we may
+##'   wish to be able to suppress such output, and there are thus many modifications
+##'   to be made. This means that an update of the original code cannot be simply
+##'   plugged into the R package \code{src} directory.
+##'
+##'   Finally, and likely because L-BFGS-B has a long history, the Fortran code is far
+##'   from well-structured. For example, the number of function and gradient evaluations
+##'   used is returned as the 34'th element of an integer vector. There does not appear
+##'   to be an easy way to stop the program after some maximum number of such evaluations
+##'   have been performed.
+##'
+##'   On the other hand, the version of L-BFGS-B in \code{optim()} is a \code{C} translation
+##'   of a now-lost Fortran code. It does not implement the improvements Nocedal and
+##'   Morales published in 2011. Hence, despite its deficiencies, this wrapper has been
+##'   prepared.
+##'
+##' In addition to the above reasons for the original lbfgsb3 package,
+##' this additional package allows C calling of L-BFGS-B 3.0 by a
+##' program as well as adjustments to the tolerances that were not
+##' present in the original CRAN package.  Also adjustments were made
+##' to have outputs conform with R's optim routine.
+##' @export
+lbfgsb3c <- function(par, fn, gr=NULL, lower = -Inf, upper = Inf,
+                     control=list(), ..., rho=NULL){
 
 # ?? need to add controls
 # if (is.null(gr)) require(numDeriv) # eventually change to "grfwd" etc.
 # interface to Fortran Lbfgsb.3.0
 ## 150121 There is currently no limit on function or gradient evaluations
 
-    tasklist <- c('NEW_X', 'START', 'STOP', 'FG',  # 1-4
-       'ABNORMAL_TERMINATION_IN_LNSRCH', 'CONVERGENCE', #5-6
-       'CONVERGENCE: NORM_OF_PROJECTED_GRADIENT_<=_PGTOL',#7
-       'CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH',#8
-       'ERROR: FTOL .LT. ZERO', #9
-       'ERROR: GTOL .LT. ZERO' ,#10
-       'ERROR: INITIAL G .GE. ZERO', #11
-       'ERROR: INVALID NBD', # 12
-       'ERROR: N .LE. 0', # 13
-       'ERROR: NO FEASIBLE SOLUTION', # 14
-       'ERROR: STP .GT. STPMAX', # 15
-       'ERROR: STP .LT. STPMIN', # 16
-       'ERROR: STPMAX .LT. STPMIN', # 17
-       'ERROR: STPMIN .LT. ZERO', # 18
-       'ERROR: XTOL .LT. ZERO', # 19
-       'FG_LNSRCH', # 20
-       'FG_START', # 21
-       'RESTART_FROM_LNSRCH', # 22
-       'WARNING: ROUNDING ERRORS PREVENT PROGRESS', # 23
-       'WARNING: STP .eq. STPMAX', # 24
-       'WARNING: STP .eq. STPMIN', # 25
-       'WARNING: XTOL TEST SATISFIED')# 26
-# CONV in 6, 7, 8; ERROR in 9-19; WARN in 23-26
-
-# if (!is.loaded("lbfgsb3.so")) dyn.load("lbfgsb3.so") # get the routines attached
-
 # control defaults -- idea from spg
-    ctrl <- list(maxit = 500, trace = 0, iprint = 0L,
-                 factr=1.0e+7, pgtol=1.0e-5, nmax=1024L, mmax=17L);
+    ctrl <- list(trace=0L,
+                 maxit=100L,
+                 iprint=10,
+                 lmm=5,
+                 factr=1e7,
+                 pgtol=0,
+                 xtol=0);
     namc <- names(control)
     if (!all(namc %in% names(ctrl)))
         stop("unknown names in control: ", namc[!(namc %in% names(ctrl))])
     ctrl[namc] <- control
-
-
-# Here expand control list, but for moment leave alone
-      iprint <- as.integer(ctrl$iprint)
-      factr <- as.double(ctrl$factr)
-      pgtol <- as.double(ctrl$pgtol)
-      nmax <- 1024L
-      mmax <- 17L
-if (length(prm) > nmax) stop("The number of parameters cannot exceed 1024")
-      n <- as.integer(length(prm))
-      m <- 5L # default
-## Define the storage
-nbd <- rep(2L, n) # start by defining them "on" -- adjust below
-nwa<-2*mmax*nmax + 5*nmax + 11*mmax*mmax + 8*mmax
-wa<-rep(0, nwa)
-dsave<-rep(0,29)
-lsave<-rep(TRUE,4)
-isave<-rep(0L,44)
-iwa<-rep(0L, 3*nmax)
-csave<-"" # note char strings are 255 automatically
-
-
-if (length(lower) == 1) lower <- rep(lower, n)
-if (length(upper) == 1) upper <- rep(upper, n)
-
-bigval <- .Machine$double.xmax/10.
-
-for (i in 1:n) {
-   if (is.finite(lower[i])) {
-        if (is.finite(upper[i])) nbd[i] <- 2
-        else {
-           nbd[i] <- 1
-           upper[i] <- bigval # to avoid call issue
-             }
-   } else { if (is.finite(upper[i])) {
-              nbd[i] <- 3
-              lower[i] <- -bigval
-            } else {
-              nbd[i] <- 0
-              upper[i] <- bigval
-              lower[i] <- -bigval
-                 }
-   }
-}
-## cat("nbd:")
-## print(nbd)
-
-
-##     We start the iteration by initializing task.
-##
-      itask <- 2L # START
-      task <- tasklist[itask]
-      f <- .Machine$double.xmax / 100
-      g <- rep(f, n)
-
-##        ------- the beginning of the loop ----------
-icsave <- 0 # to make sure defined
-
-## 111  continue ##  top of loop
-repeat {
-##     This is the call to the L-BFGS-B code.
-      if (ctrl$trace >= 2) {
-       cat("Before call, f=",f,"  task number ",itask," ")
-       print(task)
-      }
-      result <- .Fortran('lbfgsb3', n = as.integer(n),m = as.integer(m),
-                   x = as.double(prm), l = as.double(lower), u = as.double(upper),
-                   nbd = as.integer(nbd), f = as.double(f), g = as.double(g),
-                   factr = as.double(factr), pgtol = as.double(pgtol),
-                   wa = as.double(wa), iwa = as.integer(iwa),
-                   itask = as.integer(itask),
-                   iprint = as.integer(iprint),
-                   icsave = as.integer(icsave), lsave=as.logical(lsave),
-                   isave=as.integer(isave), dsave=as.double(dsave))
-      itask <- result$itask
-      icsave <- result$icsave
-      prm <- result$x
-##      cat("in lbfgsb3 parameter results:")
-##      print(prm)
-      g <- result$g
-      iwa <- result$iwa
-      wa <- result$wa
-      nbd <- result$nbd
-      lsave <- result$lsave
-      isave <- result$isave
-      dsave <- result$dsave
-      if (ctrl$trace > 2) {
-      cat("returned from lbfgsb3\n")
-      cat("returned itask is ",itask,"\n")
-      task <- tasklist[itask]
-      cat("changed task to ", task,"\n")
-##      task<-readline("continue")
-      }
-
-      if  (itask %in% c(4L, 20L, 21L) ) {
-         if (ctrl$trace >= 2) {
-          cat("computing f and g at prm=")
-          print(prm)
-         }
-##        Compute function value f for the sample problem.
-         f <- fn(prm, ...)
-##        Compute gradient g for the sample problem.
-         if (is.null(gr)) {
-             g <- grad(fn, prm, ...)
-         } else {
-             g <- gr(prm, ...)
-         }
-         if (ctrl$trace > 0) {
-            cat("At iteration ", isave[34]," f =",f)
-            if (ctrl$trace > 1) {
-               cat("max(abs(g))=",max(abs(g)))
-            }
-            cat("\n")
-         }
-      } else {
-        if (itask == 1L )  { # NEW_X
-##          tmp <- readline("Continue") # eventually remove this
- 		##     If task is neither FG nor NEW_X we terminate execution.
-          } else break
-      }
- } # end repeat
-## Here build return structure
-##  print(result) ## only print for debugging
-  info <- list(task = task, itask = itask, lsave = lsave,
-                icsave = icsave, dsave = dsave, isave = isave)
-  ans <- list(prm = prm, f = f, g = g, info = info)
-##======================= The end of driver1 ============================
+    if (missing(rho)){
+        rho <- as.environment(list(...));
+    }
+    if (is.null(gr)){
+        gr <- function(x, ...){
+            numDeriv::grad(fn, x, ...);
+        }
+    }
+    if (is(fn, "function") & is (gr, "function")){
+        fnR <- function(x, rho){
+            do.call(fn, c(list(x), as.list(rho)));
+        }
+        grR <- function(x, rho){
+            do.call(gr, c(list(x), as.list(rho)));
+        }
+        return(lbfgsb3cpp(par, fnR, grR, lower, upper, ctrl, rho));
+    } else {
+        return(lbfgsb3cpp(par, fn, gr, lower, upper, ctrl, rho));
+    }
 } # end of lbfgsb3()

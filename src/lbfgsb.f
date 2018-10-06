@@ -1,6 +1,6 @@
 c                                                                                      
-c  L-BFGS-B is released under the “New BSD License” (aka “Modified BSD License”        
-c  or “3-clause license”)                                                              
+c  L-BFGS-B is released under the "New BSD License" (aka "Modified BSD License"        
+c  or "3-clause license") 
 c  Please read attached file License.txt                                               
 c                                        
 c===========   L-BFGS-B (version 3.0.  April 25, 2011  ===================
@@ -45,8 +45,8 @@ c                        March  2011
 c                                                 
 c============================================================================= 
 c JN 20150118 change name setulb to lbfgsb3
-c      subroutine setulb(n, m, x, l, u, nbd, f, g, factr, pgtol, wa, iwa,
-      subroutine lbfgsb3(n, m, x, l, u, nbd, f, g, factr, pgtol, wa,
+c MLF 20180818 changed name back lbfgsb3 in c wrapper
+      subroutine setulb(n, m, x, l, u, nbd, f, g, factr, pgtol, wa, 
      +                iwa, itask, iprint, icsave, lsave, isave, dsave)
 c Berend noted earlier format beyond column 72 
       logical          lsave(4)
@@ -59,7 +59,7 @@ c-jlm-jn
  
 c     ************
 c
-c     Subroutine lbfgsb3
+c     Subroutine setulb
 c
 c     This subroutine partitions the working arrays wa and iwa, and 
 c       then uses the limited memory BFGS method to solve the bound
@@ -299,7 +299,7 @@ cw      write(6,*) " itask on return is ",itask
 
       end
 
-c======================= The end of lbfgsb3 =============================
+c======================= The end of setulb =============================
 c mainlb here
  
       subroutine mainlb(n, m, x, l, u, nbd, f, g, factr, pgtol, ws, wy,
