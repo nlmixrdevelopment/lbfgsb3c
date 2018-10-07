@@ -19,13 +19,12 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
 			  double *upper, int *nbd, double *Fmin, optimfn fn,
 			  optimgr gr, int *fail, void *ex, double factr,
 			  double pgtol, int *fncount, int *grcount,
-			  int maxit, char *msg, int trace, int nREPORT,
-			  double xtol){
+			  int maxit, char *msg, int trace, int iprint,
+			  double xtol, double *g){
   // Optim compatible interface
   int itask= 2;
   // *Fmin=;
   double *lastx = new double[n];
-  double *g = new double[n];
   int nwa = 2*lmm*n + 11*lmm*lmm + 5*n + 8*lmm;
   double *wa= new double[nwa];
   int niwa = 3*n;
@@ -45,7 +44,7 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
       break;
     }
     setulb_(&n, &lmm, x, lower, upper, nbd, Fmin, g, &factr, &pgtol,
-	  wa, iwa, &itask, &nREPORT, &icsave, lsave, isave, dsave);
+	  wa, iwa, &itask, &iprint, &icsave, lsave, isave, dsave);
     switch (itask){
     case 4:
     case 20:
@@ -67,7 +66,6 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
   // info <- list(task = task, itask = itask, lsave = lsave,
   //      icsave = icsave, dsave = dsave, isave = isave)
   fail[0]= itask;
-  delete[] g;
   delete[] wa;
   delete[] iwa;
   delete[] lastx;
@@ -98,6 +96,7 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   Rcpp::List ret;
   ev["fn"] = fn;
   ev["gr"] = gr;
+  Rcpp::NumericVector g(par.size());
   CharacterVector taskList(28);
   taskList[0]="NEW_X";
   taskList[1]="START";
@@ -135,7 +134,7 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   int lmm = as<int>(ctrl["lmm"]);
   int n = par.size();
   int maxit = as<int>(ctrl["maxit"]);
-  int nREPORT=as<int>(ctrl["iprint"]);
+  int iprint=as<int>(ctrl["iprint"]);
   // double *g = new double[par.size()];
   double *low = new double[par.size()];
   if (lower.size() == 1){
@@ -179,10 +178,11 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   char msg[120];
   lbfgsb3C_(n, lmm, x, low, up, nbd, &fmin, gfn, ggr,
 	    &fail, ex, factr, pgtol, &fncount,
-	    &grcount, maxit, msg, trace, nREPORT, xtol);
+	    &grcount, maxit, msg, trace, iprint , xtol, &g[0]);
   NumericVector parf(par.size());
   std::copy(&x[0],&x[0]+par.size(),parf.begin());
   ret["par"]=parf;
+  ret["grad"]=g;
   ret["value"] = fmin;
   IntegerVector cnt = IntegerVector::create(fncount,grcount);
   ret["counts"] = cnt;
@@ -216,7 +216,7 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
     ret["convergence"] = 52;
     break;
   }
-  ret["message"]= taskList[fail-1];
+  ret["message"]= CharacterVector::create(taskList[fail-1]);
   delete [] x;
   delete [] low;
   delete [] up;

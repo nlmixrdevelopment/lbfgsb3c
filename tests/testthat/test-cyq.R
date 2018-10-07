@@ -1,12 +1,9 @@
-## cyq.R -- Fletcher's Chebyquad problem
-
-rm(list = ls())
-library(lbfgsb3)
 # Ref: Fletcher, R. (1965) Function minimization without
 #   calculating derivatives -- a review,
 #         Computer J., 8, 33-41.
 
 # Note we do not have all components here e.g., .jsd, .h
+## context("Fletcher's Chebyquad problem")
 
 cyq.f <- function(x) {
     rv <- cyq.res(x)
@@ -79,21 +76,38 @@ cyq.g <- function(x) {
     gg <- as.vector(2 * rv %*% cj)
 }
 
-cat("Fletcher chebyquad function in file cyq.R\n")
 
 # nn <- c(2, 3, 5, 8, 10, 20, 30)
 nn <- c(2, 3, 5, 8)
 
 for (n in nn) {
-    cat("Chebyquad in ", n, " parameters\n")
-    afname <- paste("acyq", n, "G.txt", sep = "")
-    lower <- rep(-10, n)
-    upper <- rep(10, n)
-    bdmsk <- rep(1, n)  # free all parameters
-    x0 <- 1:n
-    x0 <- x0/(n + 1)  # Initial value suggested by Fletcher
-    ut <- system.time(ans <- lbfgsb3(x0, cyq.f, cyq.g, lower, 
-        upper, control = list()))[1]
-    print(ans)
-    cat("time = ", ut, "\n")
+    str <- paste0("Chebyquad in ", n, " parameters");
+    context(str)
+    test_that(str, {
+        lower <- rep(-10, n)
+        upper <- rep(10, n)
+        bdmsk <- rep(1, n)  # free all parameters
+        x0 <- 1:n
+        x0 <- x0/(n + 1)  # Initial value suggested by Fletcher
+        ans <- lbfgsb3c(x0, cyq.f, cyq.g, lower,
+                        upper, control = list())
+        if (n == 2){
+            expect_equal(c(0.211, 0.789), round(ans$par, 3))
+            expect_equal(0, round(ans$value, 3))
+        } else if (n == 3){
+            expect_equal(c(0.146, 0.5, 0.854), round(ans$par, 3))
+            expect_equal(0, round(ans$value, 3))
+        } else if (n == 5){
+            expect_equal(c(0.084, 0.313, 0.5, 0.687, 0.916),
+                         round(ans$par, 3))
+            expect_equal(0,
+                         round(ans$value, 3))
+        } else if (n == 8){
+            expect_equal(c(0.043, 0.193, 0.266, 0.5, 0.5, 0.734, 0.807, 0.957),
+                         round(ans$par, 3))
+            expect_equal(0.004,
+                         round(ans$value, 3))
+        }
+    })
+
 }

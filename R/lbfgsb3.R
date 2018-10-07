@@ -90,16 +90,10 @@
 ##' @export
 lbfgsb3c <- function(par, fn, gr=NULL, lower = -Inf, upper = Inf,
                      control=list(), ..., rho=NULL){
-
-# ?? need to add controls
-# if (is.null(gr)) require(numDeriv) # eventually change to "grfwd" etc.
-# interface to Fortran Lbfgsb.3.0
-## 150121 There is currently no limit on function or gradient evaluations
-
 # control defaults -- idea from spg
-    ctrl <- list(trace=0L,
+    ctrl <- list(trace= 0L,
                  maxit=100L,
-                 iprint=10,
+                 iprint= -1L,
                  lmm=5,
                  factr=1e7,
                  pgtol=0,
