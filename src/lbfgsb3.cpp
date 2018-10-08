@@ -4,6 +4,7 @@
 #include <time.h>
 #include <Rmath.h>
 #include <Rcpp.h>
+#define max2( a , b )  ( (a) > (b) ? (a) : (b) )
 using namespace Rcpp;
 
 extern "C" void setulb_(int *n, int *m, double *x, double *l, double *u,
@@ -25,6 +26,7 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
   int itask= 2;
   // *Fmin=;
   double *lastx = new double[n];
+  std::copy(&x[0],&x[0]+n,&lastx[0]);
   int nwa = 2*lmm*n + 11*lmm*lmm + 5*n + 8*lmm;
   double *wa= new double[nwa];
   int niwa = 3*n;
@@ -32,17 +34,15 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
   int icsave = 0;
   int lsave[4] = {0};
   int isave[44] = {0};
+  int i=0;
   double dsave[29]= {0};
   // Initial setup
   int doExit=0;
   fncount[0]=0;
   grcount[0]=0;
+  int itask2=0;
+  double tmp;
   while (true){
-    if (maxit <= fncount[0]){
-      doExit=1;
-      itask=28;
-      break;
-    }
     setulb_(&n, &lmm, x, lower, upper, nbd, Fmin, g, &factr, &pgtol,
 	  wa, iwa, &itask, &iprint, &icsave, lsave, isave, dsave);
     switch (itask){
@@ -56,12 +56,28 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
       grcount[0]++;
       break;
     case 1:
-      // continue
+      // New x;
+      if (maxit <= fncount[0]){
+	itask2=28;
+	itask=3; // Stop -- gives the right results and restores gradients
+      } else {
+	tmp = fabs(lastx[n-1]-x[n-1]);
+	for (i=n-1;i--;){
+	  tmp = max2(tmp,fabs(lastx[i]-x[i]));
+	}
+	if (tmp < xtol){
+	  itask2=27;
+	  itask=3; // Stop -- gives the right results and restores gradients
+	}
+      }
       break;
     default:
       doExit=1;
     }
     if (doExit) break;
+  }
+  if (itask2){
+    itask=itask2;
   }
   // info <- list(task = task, itask = itask, lsave = lsave,
   //      icsave = icsave, dsave = dsave, isave = isave)
