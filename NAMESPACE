@@ -2,4 +2,5 @@
 
 export(lbfgsb3c)
 importFrom(Rcpp,evalCpp)
+importFrom(methods,is)
 useDynLib(lbfgsb3c, .registration=TRUE)

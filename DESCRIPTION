@@ -14,10 +14,10 @@ Maintainer: Matthew Fidler <matthew.fidler@gmail.com>
 Description: Interfacing to Nocedal et al. L-BFGS-B.3.0 (2011) limited
 	memory BFGS minimizer with bounds on parameters. This is a fork of lbfgsb3.  This
 	registers a R compatible c interface to lbfgsb3 that uses the same function types
-	and optimization as the optim library (see writing R extensions for details)
+	and optimization as the optim library (see writing R extensions for details).
 License: GPL-2
-Depends: R (>= 2.15.0)
-Imports: Rcpp (>= 0.12.3), numDeriv
+Depends: R (>= 3.0.2)
+Imports: Rcpp (>= 0.12.3), numDeriv, methods
 LinkingTo: Rcpp (>= 0.12.3), RcppArmadillo
 NeedsCompilation: yes
 RoxygenNote: 6.1.0

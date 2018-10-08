@@ -1,4 +1,4 @@
-#include "lbfgsb3.h"
+#include "lbfgsb3c.h"
 #include <R.h>
 #include <Rinternals.h>
 #include <stdlib.h> // for NULL

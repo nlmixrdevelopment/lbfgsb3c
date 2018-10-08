@@ -1,4 +1,5 @@
 ##' @importFrom Rcpp evalCpp
+##' @importFrom methods is
 ##' @useDynLib lbfgsb3c, .registration=TRUE
 "lbfgsb3c"
 
