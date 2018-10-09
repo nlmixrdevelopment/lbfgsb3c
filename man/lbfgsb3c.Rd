@@ -53,6 +53,18 @@ Interfacing wrapper for the Nocedal - Morales LBFGSB3 (Fortran) limited memory B
 }
 \details{
 See the notes below for a general appreciation of this package.
+
+The control list can contain:
+\itemize{
+\item{trace} If positive, tracing information on the progress of the optimization is produced. Higher values may produce more tracing information: for method "L-BFGS-B" there are six levels of tracing. (To understand exactly what these do see the source code: higher levels give more detail.)
+\item{factr} controls the convergence of the "L-BFGS-B" method. Convergence occurs when the reduction in the objective is within this factor of the machine tolerance. Default is 1e7, that is a tolerance of about 1e-8.
+\item{pgtol} helps control the convergence of the "L-BFGS-B" method. It is a tolerance on the projected gradient in the current search direction. This defaults to zero, when the check is suppressed.
+\item{xtolAtol} helps control the convergence of the "L-BFGS-B" method. It is an absolute tolerance difference in x values. This defaults to zero, when the check is suppressed.
+\item{xtolRtol} helps control the convergence of the "L-BFGS-B" method. It is an relative tolerance difference in x values. This defaults to zero, when the check is suppressed.
+\item{lmm} is an integer giving the number of BFGS updates retained in the "L-BFGS-B" method, It defaults to 5.
+\item{maxit} maximum number of iterations.
+\item{iprint} If positive, tracing information on the progress of the optimization is produced. Higher values may produce more tracing information: for method "L-BFGS-B" there are six levels of tracing. (To understand exactly what these do see the source code: higher levels give more detail.)
+}
 }
 \note{
 This package is a wrapper to the Fortran code released by Nocedal and Morales.

@@ -7,5 +7,5 @@ This is the fork of the libfgsb3 from cran with the following differences:
 - Allows a direct C/C++ interface through a R registered function,
   similar to C interface to `optim` with 2 additional arguments.
 - Allows adjustment of tolerances for minimization success.
-- Added `xtol` minimization success
+- Added `xtolAtol` and `xtolRtol` minimization success criterion.
 - Added `maxit` termination

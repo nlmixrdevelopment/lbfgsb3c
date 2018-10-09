@@ -21,7 +21,7 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
 			  optimgr gr, int *fail, void *ex, double factr,
 			  double pgtol, int *fncount, int *grcount,
 			  int maxit, char *msg, int trace, int iprint,
-			  double xtol, double *g){
+			  double atol, double rtol, double *g){
   // Optim compatible interface
   int itask= 2;
   // *Fmin=;
@@ -41,7 +41,6 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
   fncount[0]=0;
   grcount[0]=0;
   int itask2=0;
-  double tmp;
   while (true){
     setulb_(&n, &lmm, x, lower, upper, nbd, Fmin, g, &factr, &pgtol,
 	  wa, iwa, &itask, &iprint, &icsave, lsave, isave, dsave);
@@ -61,11 +60,16 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
 	itask2=28;
 	itask=3; // Stop -- gives the right results and restores gradients
       } else {
-	tmp = fabs(lastx[n-1]-x[n-1]);
-	for (i=n-1;i--;){
-	  tmp = max2(tmp,fabs(lastx[i]-x[i]));
+	bool converge=fabs(lastx[n-1]-x[n-1]) < fabs(x[n-1])*rtol+atol;
+	if (converge){
+	  for (i=n-1;i--;){
+	    converge=fabs(lastx[i]-x[i]) < fabs(x[i])*rtol+atol;
+	    if  (!converge){
+	      break;
+	    }
+	  }
 	}
-	if (tmp < xtol){
+	if (converge){
 	  itask2=27;
 	  itask=3; // Stop -- gives the right results and restores gradients
 	}
@@ -146,7 +150,8 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   int trace = as<int>(ctrl["trace"]);
   double factr = as<double>(ctrl["factr"]);
   double pgtol = as<double>(ctrl["pgtol"]);
-  double xtol = as<double>(ctrl["xtol"]);
+  double atol = as<double>(ctrl["xtolAtol"]);
+  double rtol = as<double>(ctrl["xtolRtol"]);
   int lmm = as<int>(ctrl["lmm"]);
   int n = par.size();
   int maxit = as<int>(ctrl["maxit"]);
@@ -194,7 +199,7 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   char msg[120];
   lbfgsb3C_(n, lmm, x, low, up, nbd, &fmin, gfn, ggr,
 	    &fail, ex, factr, pgtol, &fncount,
-	    &grcount, maxit, msg, trace, iprint , xtol, &g[0]);
+	    &grcount, maxit, msg, trace, iprint , atol, rtol, &g[0]);
   NumericVector parf(par.size());
   std::copy(&x[0],&x[0]+par.size(),parf.begin());
   ret["par"]=parf;
