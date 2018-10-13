@@ -8,7 +8,8 @@ void lbfgsb3C_(int n, int lmm, double *x, double *lower,
 	       double *upper, int *nbd, double *Fmin, optimfn fn,
 	       optimgr gr, int *fail, void *ex, double factr,
 	       double pgtol, int *fncount, int *grcount,
-	       int maxit, char *msg, int trace, int nREPORT, double xtol);
+	       int maxit, char *msg, int trace, int iprint,
+	       double atol, double rtol, double *g);
 
 SEXP _lbfgsb3c_lbfgsb3cpp(SEXP, SEXP, SEXP, SEXP, SEXP,
 			  SEXP, SEXP);

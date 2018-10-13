@@ -59,8 +59,8 @@ The control list can contain:
 \item{trace} If positive, tracing information on the progress of the optimization is produced. Higher values may produce more tracing information: for method "L-BFGS-B" there are six levels of tracing. (To understand exactly what these do see the source code: higher levels give more detail.)
 \item{factr} controls the convergence of the "L-BFGS-B" method. Convergence occurs when the reduction in the objective is within this factor of the machine tolerance. Default is 1e7, that is a tolerance of about 1e-8.
 \item{pgtol} helps control the convergence of the "L-BFGS-B" method. It is a tolerance on the projected gradient in the current search direction. This defaults to zero, when the check is suppressed.
-\item{xtolAtol} helps control the convergence of the "L-BFGS-B" method. It is an absolute tolerance difference in x values. This defaults to zero, when the check is suppressed.
-\item{xtolRtol} helps control the convergence of the "L-BFGS-B" method. It is an relative tolerance difference in x values. This defaults to zero, when the check is suppressed.
+\item{abstol} helps control the convergence of the "L-BFGS-B" method. It is an absolute tolerance difference in x values. This defaults to zero, when the check is suppressed.
+\item{reltol} helps control the convergence of the "L-BFGS-B" method. It is an relative tolerance difference in x values. This defaults to zero, when the check is suppressed.
 \item{lmm} is an integer giving the number of BFGS updates retained in the "L-BFGS-B" method, It defaults to 5.
 \item{maxit} maximum number of iterations.
 \item{iprint} If positive, tracing information on the progress of the optimization is produced. Higher values may produce more tracing information: for method "L-BFGS-B" there are six levels of tracing. (To understand exactly what these do see the source code: higher levels give more detail.)
@@ -95,6 +95,34 @@ this additional package allows C calling of L-BFGS-B 3.0 by a
 program as well as adjustments to the tolerances that were not
 present in the original CRAN package.  Also adjustments were made
 to have outputs conform with R's optim routine.
+}
+\examples{
+# Rosenbrock's banana function
+n=3; p=100
+
+fr = function(x)
+{
+    f=1.0
+    for(i in 2:n) {
+        f=f+p*(x[i]-x[i-1]**2)**2+(1.0-x[i])**2
+    }
+    f
+}
+
+grr = function(x)
+{
+    g = double(n)
+    g[1]=-4.0*p*(x[2]-x[1]**2)*x[1]
+    if(n>2) {
+        for(i in 2:(n-1)) {
+            g[i]=2.0*p*(x[i]-x[i-1]**2)-4.0*p*(x[i+1]-x[i]**2)*x[i]-2.0*(1.0-x[i])
+        }
+    }
+    g[n]=2.0*p*(x[n]-x[n-1]**2)-2.0*(1.0-x[n])
+    g
+}
+x = c(a=1.02, b=1.02, c=1.02)
+(op1 <- lbfgsb3c(x,fr, grr, x))
 }
 \references{
 Morales, J. L.; Nocedal, J. (2011). "Remark on 'algorithm 778: L-BFGS-B:

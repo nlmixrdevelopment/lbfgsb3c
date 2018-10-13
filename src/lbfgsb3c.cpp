@@ -93,12 +93,15 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
 
 Environment grho;
 
+CharacterVector gnames;
+
 List ev;
 
 double gfn(int n, double *x, void *ex){
   Rcpp::NumericVector par(n);
   std::copy(&x[0], &x[0]+n, &par[0]);
   Function fn = as<Function>(ev["fn"]);
+  par.attr("names") = ev["pn"];
   double ret = as<double>(fn(par, grho));
   return ret;
 }
@@ -107,6 +110,7 @@ void ggr(int n, double *x, double *gr, void *ex){
   Rcpp::NumericVector par(n), ret(n);
   std::copy(&x[0], &x[0]+n, &par[0]);
   Function grad = as<Function>(ev["gr"]);
+  par.attr("names") = ev["pn"];
   ret = grad(par, grho);
   std::copy(&ret[0], &ret[0]+n, &gr[0]);
 }
@@ -116,6 +120,7 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   Rcpp::List ret;
   ev["fn"] = fn;
   ev["gr"] = gr;
+  ev["pn"] = par.attr("names");
   Rcpp::NumericVector g(par.size());
   CharacterVector taskList(28);
   taskList[0]="NEW_X";
@@ -150,8 +155,8 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   int trace = as<int>(ctrl["trace"]);
   double factr = as<double>(ctrl["factr"]);
   double pgtol = as<double>(ctrl["pgtol"]);
-  double atol = as<double>(ctrl["xtolAtol"]);
-  double rtol = as<double>(ctrl["xtolRtol"]);
+  double atol = as<double>(ctrl["abstol"]);
+  double rtol = as<double>(ctrl["reltol"]);
   int lmm = as<int>(ctrl["lmm"]);
   int n = par.size();
   int maxit = as<int>(ctrl["maxit"]);
@@ -202,6 +207,8 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
 	    &grcount, maxit, msg, trace, iprint , atol, rtol, &g[0]);
   NumericVector parf(par.size());
   std::copy(&x[0],&x[0]+par.size(),parf.begin());
+  parf.attr("names")=ev["pn"];
+  g.attr("names")=ev["pn"];
   ret["par"]=parf;
   ret["grad"]=g;
   ret["value"] = fmin;
