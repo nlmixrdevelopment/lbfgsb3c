@@ -1,6 +1,6 @@
 Package: lbfgsb3c
 Type: Package
-Title: Limited Memory BFGS Minimizer with Bounds on Parameters with optim C interface
+Title: Limited Memory BFGS Minimizer with Bounds on Parameters with optim() C interface
 Version: 2018-2.13
 Authors@R: c(person(given = c("Matthew", "L"), family = "Fidler", role =
               c("aut", "cre"), email = "matthew.fidler@gmail.com"),
@@ -14,7 +14,8 @@ Maintainer: Matthew L Fidler <matthew.fidler@gmail.com>
 Description: Interfacing to Nocedal et al. L-BFGS-B.3.0 (2011) limited
 	memory BFGS minimizer with bounds on parameters. This is a fork of lbfgsb3.  This
 	registers a R compatible c interface to lbfgsb3 that uses the same function types
-	and optimization as the optim library (see writing R extensions for details).
+	and optimization as the optim() function (see writing R extensions and source for
+	details).
 License: GPL-2
 Depends: R (>= 3.0.2)
 Imports: Rcpp (>= 0.12.3), numDeriv, methods
