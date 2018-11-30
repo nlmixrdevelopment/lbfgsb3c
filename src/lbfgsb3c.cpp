@@ -75,6 +75,7 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
     if (trace >= 2){
       Rprintf("\n================================================================================\nBefore call f=%f task number %d, or \"%s\"\n", *Fmin, itask, (as<std::string>(taskList[itask-1])).c_str());
     }
+    if (itask==3) doExit=1;
     setulb_(&n, &lmm, x, lower, upper, nbd, Fmin, g, &factr, &pgtol,
 	  wa, iwa, &itask, &iprint, &icsave, lsave, isave, dsave);
     if (trace > 2) {
@@ -115,7 +116,7 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
       if (maxit <= fncount[0]){
       	itask2=28;
 	doExit=1;
-      	//itask=3; // Stop -- gives the right results and restores gradients
+      	itask=3; // Stop -- gives the right results and restores gradients
 	if (trace > 2){
 	  Rprintf("Exit becuase maximum number of function calls %d met.\n", maxit);
 	}
@@ -131,13 +132,14 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
       	}
       	if (converge){
       	  itask2=27;
-      	  //itask=3; // Stop -- gives the right results and restores gradients
+      	  itask=3; // Stop -- gives the right results and restores gradients
 	  if (trace > 2){
 	    Rprintf("CONVERGENCE: Parameters differences below xtol.\n", maxit);
 	  }
 	  doExit=1;
       	}
       }
+      std::copy(&x[0],&x[0]+n,&lastx[0]);
       break;
     default:
       doExit=1;
