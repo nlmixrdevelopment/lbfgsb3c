@@ -43,6 +43,7 @@
 ##' \item{lmm} is an integer giving the number of BFGS updates retained in the "L-BFGS-B" method, It defaults to 5.
 ##' \item{maxit} maximum number of iterations.
 ##' \item{iprint} If positive, tracing information on the progress of the optimization is produced. Higher values may produce more tracing information: for method "L-BFGS-B" there are six levels of tracing. (To understand exactly what these do see the source code: higher levels give more detail.)
+##' \item{info} a boolean to indicate if more optimization information is captured and output in a $info list
 ##' }
 ##'
 ##' @return
