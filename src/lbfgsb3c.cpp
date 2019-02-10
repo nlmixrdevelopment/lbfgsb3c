@@ -1,4 +1,3 @@
-//
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -16,6 +15,8 @@ extern "C" void setulb_(int *n, int *m, double *x, double *l, double *u,
 typedef double optimfn(int n, double *par, void *ex);
 
 typedef void optimgr(int n, double *par, double *gr, void *ex);
+
+List lbfgsb3Cinfo;
 
 extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
 			  double *upper, int *nbd, double *Fmin, optimfn fn,
@@ -149,6 +150,20 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
   if (itask2){
     itask=itask2;
   }
+  LogicalVector lsaveR(4);
+  NumericVector dsaveR(29);
+  IntegerVector isaveR(44);
+  std::copy(&lsave[0],&lsave[0]+4, &lsaveR[0]);
+  std::copy(&dsave[0],&dsave[0]+29, dsaveR.begin());
+  std::copy(&isave[0],&isave[0]+44, isaveR.begin());;
+  CharacterVector taskR(1);
+  taskR[0] = taskList[itask-1];
+  lbfgsb3Cinfo = List::create(_["task"] = taskR,
+			      _["itask"]= IntegerVector::create(itask),
+			      _["lsave"]= lsaveR,
+			      _["icsave"]= IntegerVector::create(icsave),
+			      _["dsave"]= dsaveR,
+			      _["isave"] = isaveR);
   // info <- list(task = task, itask = itask, lsave = lsave,
   //      icsave = icsave, dsave = dsave, isave = isave)
   fail[0]= itask;
@@ -194,6 +209,7 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   double pgtol = as<double>(ctrl["pgtol"]);
   double atol = as<double>(ctrl["abstol"]);
   double rtol = as<double>(ctrl["reltol"]);
+  bool addInfo = as<bool>(ctrl["info"]);
   int lmm = as<int>(ctrl["lmm"]);
   int n = par.size();
   int maxit = as<int>(ctrl["maxit"]);
@@ -312,6 +328,7 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   taskList[27] = "Maximum number of iterations reached";      
 
   ret["message"]= CharacterVector::create(taskList[fail-1]);
+  if (addInfo) ret["info"] = lbfgsb3Cinfo;
   delete [] x;
   delete [] low;
   delete [] up;

@@ -2,9 +2,17 @@
 % Please edit documentation in R/lbfgsb3.R
 \name{lbfgsb3c}
 \alias{lbfgsb3c}
+\alias{lbfgsb3}
+\alias{lbfgsb3x}
 \title{Interfacing wrapper for the Nocedal - Morales LBFGSB3 (Fortran) limited memory BFGS solver.}
 \usage{
 lbfgsb3c(par, fn, gr = NULL, lower = -Inf, upper = Inf,
+  control = list(), ..., rho = NULL)
+
+lbfgsb3(par, fn, gr = NULL, lower = -Inf, upper = Inf,
+  control = list(), ..., rho = NULL)
+
+lbfgsb3x(par, fn, gr = NULL, lower = -Inf, upper = Inf,
   control = list(), ..., rho = NULL)
 }
 \arguments{

@@ -138,7 +138,8 @@ lbfgsb3c <- function(par, fn, gr=NULL, lower = -Inf, upper = Inf,
                  factr=1e7,
                  pgtol=0,
                  reltol=0,
-                 abstol=0);
+                 abstol=0,
+                 info=FALSE);
     namc <- names(control)
     if (!all(namc %in% names(ctrl)))
         stop("unknown names in control: ", namc[!(namc %in% names(ctrl))])
@@ -163,3 +164,11 @@ lbfgsb3c <- function(par, fn, gr=NULL, lower = -Inf, upper = Inf,
         return(lbfgsb3cpp(par, fn, gr, lower, upper, ctrl, rho));
     }
 } # end of lbfgsb3()
+
+##'@rdname lbfgsb3c
+##'@export
+lbfgsb3 <- lbfgsb3c
+
+##'@rdname lbfgsb3c
+##'@export
+lbfgsb3x <- lbfgsb3c
