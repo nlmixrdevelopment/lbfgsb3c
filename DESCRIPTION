@@ -1,7 +1,7 @@
 Package: lbfgsb3x
 Type: Package
 Title: Limited Memory BFGS Minimizer with Bounds on Parameters with optim() 'C' Interface
-Version: 2018-2.13-1
+Version: 2019-2.13-1
 Authors@R: c(person(given = c("Matthew", "L"), family = "Fidler", role =
               c("aut", "cre"), email = "matthew.fidler@gmail.com"),
 	      person(given = c("John", "C"), family = "Nash", role =
