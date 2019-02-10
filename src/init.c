@@ -1,4 +1,4 @@
-#include "../inst/include/lbfgsb3c.h"
+#include "../inst/include/lbfgsb3x.h"
 #include <R.h>
 #include <Rinternals.h>
 #include <stdlib.h> // for NULL
@@ -16,7 +16,7 @@ SEXP _lbfgsb3x_lbfgsb3cpp(SEXP, SEXP, SEXP, SEXP, SEXP,
 
 void R_init_lbfgsb3x(DllInfo *info){
   R_CallMethodDef callMethods[]  = {
-    {"_lbfgsb3c_lbfgsb3cpp", (DL_FUNC) &_lbfgsb3c_lbfgsb3cpp, 7},
+    {"_lbfgsb3x_lbfgsb3cpp", (DL_FUNC) &_lbfgsb3x_lbfgsb3cpp, 7},
     {NULL, NULL, 0}
   };
   // C callable to assign environments.

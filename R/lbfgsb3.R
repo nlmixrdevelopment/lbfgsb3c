@@ -1,7 +1,7 @@
 ##' @importFrom Rcpp evalCpp
 ##' @importFrom methods is
-##' @useDynLib lbfgsb3c, .registration=TRUE
-"lbfgsb3c"
+##' @useDynLib lbfgsb3x, .registration=TRUE
+"lbfgsb3x"
 
 
 ##' Interfacing wrapper for the Nocedal - Morales LBFGSB3 (Fortran) limited memory BFGS solver.

@@ -22,7 +22,7 @@ void lbfgsb3C(int n, int lmm, double *x, double *lower,
 	      int maxit, char *msg, int trace, int nREPORT, double atol, double rtol,
 	      double *g){
   static lbfgsb3_fn fun=NULL;
-  if (fun == NULL) fun = (lbfgsb3_fn) R_GetCCallable("lbfgsb3c","lbfgsb3C_");
+  if (fun == NULL) fun = (lbfgsb3_fn) R_GetCCallable("lbfgsb3x","lbfgsb3C_");
   fun(n, lmm, x, lower, upper, nbd, Fmin, fn, gr, fail, ex, factr, pgtol, fncount,
       grcount, maxit, msg, trace, nREPORT, atol, rtol, g);
 }
