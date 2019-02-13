@@ -1,4 +1,4 @@
-Package: lbfgsb3x
+Package: lbfgsb3c
 Type: Package
 Title: Limited Memory BFGS Minimizer with Bounds on Parameters with optim() 'C' Interface
 Version: 2019-2.13-1
