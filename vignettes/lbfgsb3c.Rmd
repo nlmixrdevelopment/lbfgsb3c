@@ -322,6 +322,12 @@ for (n in seq(2,12, by=2)) {
 
 ## Using compiled function code
 
+While you may use the same interface as described in the writing R
+extensions to interface compiled code with this function, see
+[L-BFGS-B](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Optimization),
+it is sometimes more convenient to use your own compiled code.
+
+
 The following example shows how this is done using the file `jrosen.f`
 
 ```
