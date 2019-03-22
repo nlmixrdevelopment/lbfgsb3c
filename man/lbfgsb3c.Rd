@@ -3,6 +3,7 @@
 \name{lbfgsb3c}
 \alias{lbfgsb3c}
 \alias{lbfgsb3}
+\alias{lbfgsb3f}
 \alias{lbfgsb3x}
 \title{Interfacing wrapper for the Nocedal - Morales LBFGSB3 (Fortran) limited memory BFGS solver.}
 \usage{
@@ -10,6 +11,9 @@ lbfgsb3c(par, fn, gr = NULL, lower = -Inf, upper = Inf,
   control = list(), ..., rho = NULL)
 
 lbfgsb3(par, fn, gr = NULL, lower = -Inf, upper = Inf,
+  control = list(), ..., rho = NULL)
+
+lbfgsb3f(par, fn, gr = NULL, lower = -Inf, upper = Inf,
   control = list(), ..., rho = NULL)
 
 lbfgsb3x(par, fn, gr = NULL, lower = -Inf, upper = Inf,
@@ -131,7 +135,10 @@ grr = function(x)
     g
 }
 x = c(a=1.02, b=1.02, c=1.02)
-(op1 <- lbfgsb3c(x,fr, grr, x))
+(opc <- lbfgsb3c(x,fr, grr))
+(op <- lbfgsb3(x,fr, grr, control=list(trace=1)))
+(opx <- lbfgsb3x(x,fr, grr))
+(opf <- lbfgsb3f(x,fr, grr))
 }
 \references{
 Morales, J. L.; Nocedal, J. (2011). "Remark on 'algorithm 778: L-BFGS-B:

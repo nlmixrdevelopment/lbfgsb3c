@@ -1,7 +1,7 @@
 ##' @importFrom Rcpp evalCpp
 ##' @importFrom methods is
-##' @useDynLib lbfgsb3x, .registration=TRUE
-"lbfgsb3x"
+##' @useDynLib lbfgsb3c, .registration=TRUE
+"lbfgsb3c"
 
 
 ##' Interfacing wrapper for the Nocedal - Morales LBFGSB3 (Fortran) limited memory BFGS solver.
@@ -127,7 +127,10 @@
 ##'     g
 ##' }
 ##' x = c(a=1.02, b=1.02, c=1.02)
-##' (op1 <- lbfgsb3c(x,fr, grr, x))
+##' (opc <- lbfgsb3c(x,fr, grr))
+##' (op <- lbfgsb3(x,fr, grr, control=list(trace=1)))
+##' (opx <- lbfgsb3x(x,fr, grr))
+##' (opf <- lbfgsb3f(x,fr, grr))
 ##' @export
 lbfgsb3c <- function(par, fn, gr=NULL, lower = -Inf, upper = Inf,
                      control=list(), ..., rho=NULL){
@@ -141,6 +144,13 @@ lbfgsb3c <- function(par, fn, gr=NULL, lower = -Inf, upper = Inf,
                  reltol=0,
                  abstol=0,
                  info=FALSE);
+    callstak <- sys.calls() # get the call stack
+    lcs <- length(callstak)
+    fstr <- as.character(callstak[lcs])
+    fstr <- strsplit(fstr, "(", fixed=TRUE)[[1]][1]
+    if (ctrl$trace > 0) { cat("Using function ",fstr,"\n") }
+    if ( (fstr == "lbfgsb3") || (fstr == "lbfgsb3f") ) { ctrl$info <- TRUE }
+    # This emits more information from lbfgsb3 Fortran code.
     namc <- names(control)
     if (!all(namc %in% names(ctrl)))
         stop("unknown names in control: ", namc[!(namc %in% names(ctrl))])
@@ -154,6 +164,7 @@ lbfgsb3c <- function(par, fn, gr=NULL, lower = -Inf, upper = Inf,
         }
     }
     if (is(fn, "function") & is (gr, "function")){
+##        cat("USING fnR, grR\n")
         fnR <- function(x, rho){
             do.call(fn, c(list(x), as.list(rho)));
         }
@@ -169,6 +180,10 @@ lbfgsb3c <- function(par, fn, gr=NULL, lower = -Inf, upper = Inf,
 ##'@rdname lbfgsb3c
 ##'@export
 lbfgsb3 <- lbfgsb3c
+
+##'@rdname lbfgsb3c
+##'@export
+lbfgsb3f <- lbfgsb3c
 
 ##'@rdname lbfgsb3c
 ##'@export

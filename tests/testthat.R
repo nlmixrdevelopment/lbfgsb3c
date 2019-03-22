@@ -1,4 +1,4 @@
 library(testthat)
-library(lbfgsb3x)
+library(lbfgsb3c)
 
-test_check("lbfgsb3x")
+test_check("lbfgsb3c")
