@@ -94,9 +94,11 @@ Naoaki Okazaki (see http://www.chokkan.org/software/liblbfgs/, or the fork at  h
 This has been wrapped for **R** as @Coppola2014 as the
 `lbfgs` package. This can be called from `optimx::optimr()`. 
 
-Using Rcpp (see @RCppDERF2011) and the Fortran code in package `lbfgs3`, Matthew Fidler 
-developed package `lbfgsb3c` (@lbfgsb3cMF). As this provides a more standard call and 
-return than `lbfgsb3` Fidler and I are unified the two packages as `lbfgsb3x`.
+Using Rcpp (see @RCppDERF2011) and the Fortran code in package
+`lbfgs3`, Matthew Fidler developed package `lbfgsb3c`
+(@lbfgsb3cMF). As this provides a more standard call and return than
+`lbfgsb3` Fidler and I are unified the two packages and released them
+both under the same name `lbfgsb3c`.
 
 ## Functions in package `lbfgsb3c`
 
