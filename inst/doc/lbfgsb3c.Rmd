@@ -4,7 +4,7 @@ author: "John C Nash
     Telfer School of Management,
     University of Ottawa,
     nashjc@uottawa.ca"
-date: "March 19, 2019"
+date: "July 10, 2019"
 output: 
     pdf_document
 bibliography: lbfgsb3c.bib
@@ -30,7 +30,9 @@ an `Rcpp` interface to produce package `lbfgsb3c` where the function
 that of `optimx::optimr()`. Subsequently, in a fine example of the 
 collaborations that have made **R** so useful, we have merged the 
 functionality of package `lbfgsb3` into `lbfgsb3c`, as explained
-in this vignette.
+in this vignette. Note that this document is intended primarily to 
+document our efforts to check the differences in variants of the 
+code rather than be expository.
 
 
 ## Provenance of the R optim::L-BFGS-B and related solvers
@@ -94,9 +96,11 @@ Naoaki Okazaki (see http://www.chokkan.org/software/liblbfgs/, or the fork at  h
 This has been wrapped for **R** as @Coppola2014 as the
 `lbfgs` package. This can be called from `optimx::optimr()`. 
 
-Using Rcpp (see @RCppDERF2011) and the Fortran code in package `lbfgs3`, Matthew Fidler 
-developed package `lbfgsb3c` (@lbfgsb3cMF). As this provides a more standard call and 
-return than `lbfgsb3` Fidler and I are unified the two packages as `lbfgsb3x`.
+Using Rcpp (see @RCppDERF2011) and the Fortran code in package
+`lbfgs3`, Matthew Fidler developed package `lbfgsb3c`
+(@lbfgsb3cMF). As this provides a more standard call and return than
+`lbfgsb3` Fidler and I are unified the two packages and released them
+both under the same name `lbfgsb3c`.
 
 ## Functions in package `lbfgsb3c`
 
@@ -319,6 +323,12 @@ for (n in seq(2,12, by=2)) {
 ```
 
 ## Using compiled function code
+
+While you may use the same interface as described in the writing R
+extensions to interface compiled code with this function, see
+[L-BFGS-B](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Optimization),
+it is sometimes more convenient to use your own compiled code.
+
 
 The following example shows how this is done using the file `jrosen.f`
 

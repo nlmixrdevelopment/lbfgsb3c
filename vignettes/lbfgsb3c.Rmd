@@ -4,7 +4,7 @@ author: "John C Nash
     Telfer School of Management,
     University of Ottawa,
     nashjc@uottawa.ca"
-date: "March 19, 2019"
+date: "July 10, 2019"
 output: 
     pdf_document
 bibliography: lbfgsb3c.bib
@@ -30,7 +30,9 @@ an `Rcpp` interface to produce package `lbfgsb3c` where the function
 that of `optimx::optimr()`. Subsequently, in a fine example of the 
 collaborations that have made **R** so useful, we have merged the 
 functionality of package `lbfgsb3` into `lbfgsb3c`, as explained
-in this vignette.
+in this vignette. Note that this document is intended primarily to 
+document our efforts to check the differences in variants of the 
+code rather than be expository.
 
 
 ## Provenance of the R optim::L-BFGS-B and related solvers
