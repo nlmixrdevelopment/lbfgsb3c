@@ -131,7 +131,7 @@ Fortran for an explanation of the data returned in object `info`.
 
 ```{r, bt, echo=TRUE}
 # ref BT.RES in Nash and Walker-Smith (1987)
-library(lbfgsb3c)
+## library(lbfgsb3c)
 require(optimx)
 sessionInfo()
 
@@ -214,7 +214,7 @@ cstick.g<-function(x,alpha=100){
   g<-as.double(g1+g2)
   return(g)
 }
-library(lbfgsb3c)
+## library(lbfgsb3c)
 nn <- 2
 x0 <- c(10,10)
 lo <- c(1, 1)
@@ -341,7 +341,6 @@ The following example shows how this is done using the file `jrosen.f`.
 Here is the example script. Note that we must have the file `jrosen.f` available.
 
 ```{r, usingFortran, eval=TRUE }
-# system("cd ~/temp")
 system("R CMD SHLIB jrosen.f")
 dyn.load("jrosen.so")
 is.loaded("rosen")
