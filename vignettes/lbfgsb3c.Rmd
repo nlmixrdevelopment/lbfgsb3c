@@ -4,7 +4,7 @@ author: "John C Nash
     Telfer School of Management,
     University of Ottawa,
     nashjc@uottawa.ca"
-date: "July 10, 2019"
+date: "October 18, 2019"
 output: 
     pdf_document
 bibliography: lbfgsb3c.bib
@@ -172,7 +172,9 @@ bt.setup0<-function(n){
    x<-0.5*(lo+up)
    result<-list(x=x, lower=lo, upper=up, bdmsk=bmsk)
 }
-meths <- c("L-BFGS-B", "lbfgsb3c", "lbfgsb3", "Rvmmin", "Rcgmin", "Rtnmin")
+## Following only works with optimx >= 2019-6.14 since lbfgsb3c not present beforehand
+## meths <- c("L-BFGS-B", "lbfgsb3c", "lbfgsb3", "Rvmmin", "Rcgmin", "Rtnmin")
+meths <- c("L-BFGS-B", "lbfgsb3", "Rvmmin", "Rcgmin", "Rtnmin")
 nn <- 4
 goody <- bt.setup0(nn)
 lo <- goody$lower
@@ -182,7 +184,15 @@ goody
 ## optim()
 ## Put trace=3 to get full details
 solgood <- opm(x0, bt.f, bt.g, lower=lo, upper=up, method=meths, control=list(trace=0))
+## Following code needed to add lbfgsb3c
 print(summary(solgood, order=value))
+cat("Result for lbfgsb3c\n")
+library(lbfgsb3c)
+sollbcgood <- lbfgsb3c(x0, bt.f, bt.g, lower=lo, upper=up)
+## test only
+sollbcgood
+
+
 
 bady <- bt.badsetup(nn)
 lo <- bady$lower
