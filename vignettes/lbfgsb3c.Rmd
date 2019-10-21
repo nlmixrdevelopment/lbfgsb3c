@@ -73,13 +73,14 @@ the Fortran code. However, I did not discover any test cases where the
 `optim::L-BFGS-B` and `lbfgsb3` were different, though I confess to only
 running some limited tests. There are, in fact, more in this vignette.
 
-In 2016, I was at a Fields Institute optimization conference in Toronto
-for the 70th birthday of Andy Conn. By sheer serendipity, Nocedal did not attend 
-the conference, but
-sat down next to me at the conference dinner. When I asked him about the key changes,
-he said that the most important one was to fix the computation of the machine 
-precision, which was not always correct in the 1995 code. Since **R** gets this 
-number as `.Machine$double.eps`, the offending code is irrelevant. 
+In 2016, I was at a Fields Institute optimization conference in
+Toronto for the 70th birthday of Andy Conn. By sheer serendipity,
+Nocedal did not attend the conference, but sat down next to me at the
+conference dinner. When I asked him about the key changes, he said
+that the most important one was to fix the computation of the machine
+precision, which was not always correct in the 1995 code. Since **R**
+gets this number as `.Machine$double.eps`, the offending code is
+irrelevant.
 
 Within @Morales2011, there is also reported an improvement in the subspace
 minimization that is applied in cases of bounds constraints. Since few of the
@@ -93,10 +94,12 @@ is for unconstrained minimization, while http://netlib.org/opt/lbfgs_bcm.shar ha
 constrained problems. To these are attached references @LiuN89 and @Byrd1995 respectively,
 most likely reflecting the effort required to implement the constraints.
 
-The unconstrained code has been converted to **C** under the leadership of 
-Naoaki Okazaki (see http://www.chokkan.org/software/liblbfgs/, or the fork at  https://github.com/MIRTK/LBFGS). 
-This has been wrapped for **R** as @Coppola2014 as the
-`lbfgs` package. This can be called from `optimx::optimr()`. 
+The unconstrained code has been converted to **C** under the
+leadership of Naoaki Okazaki (see
+http://www.chokkan.org/software/liblbfgs/, or the fork at
+https://github.com/MIRTK/LBFGS).  This has been wrapped for **R** as
+@Coppola2014 as the `lbfgs` package. This can be called from
+`optimx::optimr()`.
 
 Using Rcpp (see @RCppDERF2011) and the Fortran code in package
 `lbfgs3`, Matthew Fidler developed package `lbfgsb3c`
