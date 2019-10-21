@@ -131,11 +131,12 @@ examples showing differences, either better or not. Note that we use the call th
 expanded information, but we do not interpret that here. See the documentation in the source
 Fortran for an explanation of the data returned in object `info`.
 
+As the package `lbfgsb3c` is intended to replace package `lbfgsb3`, and the more current 
+package is used by recent `optimx` versions, we have to test for the version of `optimx`.
+This unfortunately gives a rather messy output from Rmarkdown.
+
 ```{r, bt, echo=TRUE}
 # ref BT.RES in Nash and Walker-Smith (1987)
-## library(lbfgsb3c)
-require(optimx)
-sessionInfo()
 
 bt.f<-function(x){
  sum(x*x)
@@ -172,9 +173,15 @@ bt.setup0<-function(n){
    x<-0.5*(lo+up)
    result<-list(x=x, lower=lo, upper=up, bdmsk=bmsk)
 }
-## Following only works with optimx >= 2019-6.14 since lbfgsb3c not present beforehand
-## meths <- c("L-BFGS-B", "lbfgsb3c", "lbfgsb3", "Rvmmin", "Rcgmin", "Rtnmin")
-meths <- c("L-BFGS-B", "lbfgsb3", "Rvmmin", "Rcgmin", "Rtnmin")
+
+## library(lbfgsb3c)
+library(optimx)
+# sessionInfo()
+oppv<- packageVersion("optimx")
+cat("optimx version is ", as.character(oppv),"\n")
+if (as.character(oppv) < '2019-6.14' ) {
+  cat("Note -- Older version of optimx in use\n")
+meths <- c("L-BFGS-B", "Rvmmin", "Rcgmin", "Rtnmin")
 nn <- 4
 goody <- bt.setup0(nn)
 lo <- goody$lower
@@ -184,16 +191,12 @@ goody
 ## optim()
 ## Put trace=3 to get full details
 solgood <- opm(x0, bt.f, bt.g, lower=lo, upper=up, method=meths, control=list(trace=0))
-## Following code needed to add lbfgsb3c
+print(solgood)
 print(summary(solgood, order=value))
 cat("Result for lbfgsb3c\n")
 library(lbfgsb3c)
 sollbcgood <- lbfgsb3c(x0, bt.f, bt.g, lower=lo, upper=up)
-## test only
 sollbcgood
-
-
-
 bady <- bt.badsetup(nn)
 lo <- bady$lower
 up <- bady$upper
@@ -204,6 +207,33 @@ bady # This has x outside bounds, but method corrects.
 ## Put trace=3 to get full details
 solbad0 <- opm(x0, bt.f, bt.g, lower=lo, upper=up, method=meths, control=list(trace=0))
 print(summary(solbad0, order=value))
+sollbcbad <- lbfgsb3c(x0, bt.f, bt.g, lower=lo, upper=up)
+sollbcbad
+} else {
+## Following only works with optimx >= 2019-6.14 since lbfgsb3c not present beforehand
+meths <- c("L-BFGS-B", "lbfgsb3c", "lbfgsb3", "Rvmmin", "Rcgmin", "Rtnmin")
+nn <- 4
+goody <- bt.setup0(nn)
+lo <- goody$lower
+up <- goody$upper
+x0 <- goody$x
+goody
+## optim()
+## Put trace=3 to get full details
+solgood <- opm(x0, bt.f, bt.g, lower=lo, upper=up, method=meths, control=list(trace=0))
+print(summary(solgood, order=value))
+bady <- bt.badsetup(nn)
+lo <- bady$lower
+up <- bady$upper
+x0 <- bady$x
+bady # This has x outside bounds, but method corrects. 
+## Should we notify user in a more aggressive fashion?
+## optim()
+## Put trace=3 to get full details
+solbad0 <- opm(x0, bt.f, bt.g, lower=lo, upper=up, method=meths, control=list(trace=0))
+print(summary(solbad0, order=value))
+}
+
 ```
 
 ### Candlestick function
@@ -226,33 +256,32 @@ cstick.g<-function(x,alpha=100){
   g<-as.double(g1+g2)
   return(g)
 }
-## library(lbfgsb3c)
+library(lbfgsb3c)
 nn <- 2
 x0 <- c(10,10)
 lo <- c(1, 1)
 up <- c(10,10)
 print(x0)
-c2o <- opm(x0, cstick.f, cstick.g, lower=lo, upper=up, method=meths, control=list(trace=0))
-print(summary(c2o, order=value))
+## c2o <- opm(x0, cstick.f, cstick.g, lower=lo, upper=up, method=meths, control=list(trace=0))
+## print(summary(c2o, order=value))
+c2l1 <- lbfgsb3c(x0, cstick.f, cstick.g, lower=lo, upper=up)
+c2l1
 
-## meths <- c("L-BFGS-B", "lbfgsb3c", "Rvmmin", "Rcgmin", "Rtnmin")
-## require(optimx)
-
-## cstick2a <- opm(x0, cstick.f, cstick.g, method=meths, upper=up, lower=lo, control=list(kkt=FALSE))
-## print(summary(cstick2a, par.select=1:2, order=value))
 lo <- c(4, 4)
-c2ob <- opm(x0, cstick.f, cstick.g, lower=lo, upper=up, method=meths, control=list(trace=0))
-print(summary(c2ob, order=value))
+## c2ob <- opm(x0, cstick.f, cstick.g, lower=lo, upper=up, method=meths, control=list(trace=0))
+## print(summary(c2ob, order=value))
+c2l2 <- lbfgsb3c(x0, cstick.f, cstick.g, lower=lo, upper=up)
+c2l2
 
 ## cstick2b <- opm(x0, cstick.f, cstick.g, method=meths, upper=up, lower=lo, control=list(kkt=FALSE))
 ## print(summary(cstick2b, par.select=1:2, order=value))
 
-nn <- 100
-x0 <- rep(10, nn)
-up <- rep(10, nn)
-lo <- rep(1e-4, nn)
-cco <- opm(x0, cstick.f, cstick.g, lower=lo, upper=up, method=meths, control=list(trace=0, kkt=FALSE))
-print(summary(cco, par.select=1:4, order=value))
+## nn <- 100
+## x0 <- rep(10, nn)
+## up <- rep(10, nn)
+## lo <- rep(1e-4, nn)
+## cco <- opm(x0, cstick.f, cstick.g, lower=lo, upper=up, method=meths, control=list(trace=0, kkt=FALSE))
+## print(summary(cco, par.select=1:4, order=value))
 ```
 
 ### Extended Rosenbrock function (from funconstrain)
@@ -305,7 +334,7 @@ exrosenx0 <- function (n = 20) {
 
 
 require(lbfgsb3c)
-require(optimx)
+## require(optimx)
 
 ## require(optimx)
 for (n in seq(2,12, by=2)) {
@@ -313,15 +342,15 @@ for (n in seq(2,12, by=2)) {
   x0 <- exrosenx0(n)
   lo <- rep(-1.5, n)
   up <- rep(3, n)
-##  cat("optim\n")
-##  print(x0)
-##  eo <- optim(x0, exrosenf, exroseng, lower=lo, upper=up, method="L-BFGS-B", control=list(trace=0))
-##  print(eo)
-##  cat("lbfgsb3c\n")
-##  el <- lbfgsb3c(x0, exrosenf, exroseng, lower=lo, upper=up, control=list(trace=0))
-##  print(el)
-   erfg <- opm(x0, exrosenf, exroseng, method=meths, lower=lo, upper=up)
-   print(summary(erfg, par.select=1:2, order=value))
+  print(x0)
+  cat("optim L-BFGS-B\n")
+  eo <- optim(x0, exrosenf, exroseng, lower=lo, upper=up, method="L-BFGS-B", control=list(trace=0))
+  print(eo)
+  cat("lbfgsb3c\n")
+  el <- lbfgsb3c(x0, exrosenf, exroseng, lower=lo, upper=up, control=list(trace=0))
+  print(el)
+##    erfg <- opm(x0, exrosenf, exroseng, method=meths, lower=lo, upper=up)
+##    print(summary(erfg, par.select=1:2, order=value))
 }
 ```
 
