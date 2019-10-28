@@ -1,15 +1,15 @@
 ---
-title: "lbfgsb3c: Using the 2011 version of L-BFGSB"
+title: "lbfgsb3c: Using the 2011 version of L-BFGS-B."
 author: "John C Nash
     Telfer School of Management,
     University of Ottawa,
     nashjc@uottawa.ca"
-date: "October 18, 2019"
+date: "October 22, 2019"
 output: 
     pdf_document
 bibliography: lbfgsb3c.bib
 vignette: >
-  %\VignetteIndexEntry{lbfgsb3x}
+  %\VignetteIndexEntry{lbfgsb3c-nocompile}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -73,14 +73,13 @@ the Fortran code. However, I did not discover any test cases where the
 `optim::L-BFGS-B` and `lbfgsb3` were different, though I confess to only
 running some limited tests. There are, in fact, more in this vignette.
 
-In 2016, I was at a Fields Institute optimization conference in
-Toronto for the 70th birthday of Andy Conn. By sheer serendipity,
-Nocedal did not attend the conference, but sat down next to me at the
-conference dinner. When I asked him about the key changes, he said
-that the most important one was to fix the computation of the machine
-precision, which was not always correct in the 1995 code. Since **R**
-gets this number as `.Machine$double.eps`, the offending code is
-irrelevant.
+In 2016, I was at a Fields Institute optimization conference in Toronto
+for the 70th birthday of Andy Conn. By sheer serendipity, Nocedal did not attend 
+the conference, but
+sat down next to me at the conference dinner. When I asked him about the key changes,
+he said that the most important one was to fix the computation of the machine 
+precision, which was not always correct in the 1995 code. Since **R** gets this 
+number as `.Machine$double.eps`, the offending code is irrelevant. 
 
 Within @Morales2011, there is also reported an improvement in the subspace
 minimization that is applied in cases of bounds constraints. Since few of the
@@ -94,12 +93,10 @@ is for unconstrained minimization, while http://netlib.org/opt/lbfgs_bcm.shar ha
 constrained problems. To these are attached references @LiuN89 and @Byrd1995 respectively,
 most likely reflecting the effort required to implement the constraints.
 
-The unconstrained code has been converted to **C** under the
-leadership of Naoaki Okazaki (see
-http://www.chokkan.org/software/liblbfgs/, or the fork at
-https://github.com/MIRTK/LBFGS).  This has been wrapped for **R** as
-@Coppola2014 as the `lbfgs` package. This can be called from
-`optimx::optimr()`.
+The unconstrained code has been converted to **C** under the leadership of 
+Naoaki Okazaki (see http://www.chokkan.org/software/liblbfgs/, or the fork at  https://github.com/MIRTK/LBFGS). 
+This has been wrapped for **R** as @Coppola2014 as the
+`lbfgs` package. This can be called from `optimx::optimr()`. 
 
 Using Rcpp (see @RCppDERF2011) and the Fortran code in package
 `lbfgs3`, Matthew Fidler developed package `lbfgsb3c`
@@ -364,7 +361,6 @@ extensions to interface compiled code with this function, see
 [L-BFGS-B](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Optimization),
 it is sometimes more convenient to use your own compiled code.
 
-
 The following example shows how this is done using the file `jrosen.f`.
 
 ```
@@ -382,9 +378,13 @@ The following example shows how this is done using the file `jrosen.f`.
        end
 ```
 
-Here is the example script. Note that we must have the file `jrosen.f` available.
+Here is the example script. Note that we must have the file `jrosen.f` available. 
+Because the executable files on different systems use different conventions and
+structures, we have turned evaluation off here so this vignette can be built
+on multiple platforms. However, we wished to provide examples of how compiled code
+could be used.
 
-```{r, usingFortran, eval=TRUE }
+```{r, usingFortran, eval=FALSE }
 system("R CMD SHLIB jrosen.f")
 dyn.load("jrosen.so")
 is.loaded("rosen")
@@ -439,7 +439,8 @@ print(tlF)
 print(myop)
 ```
 
-In this example, Fortran is actually SLOWER than plain R.
+In this example, Fortran execution was actually SLOWER than plain R on the system
+where it was run.
 
 
 ## References
