@@ -47,16 +47,16 @@ c=============================================================================
 c JN 20150118 change name setulb to lbfgsb3
 c MLF 20180818 changed name back lbfgsb3 in c wrapper
       subroutine setulb(n, m, x, l, u, nbd, f, g, factr, pgtol, wa, 
-     +                iwa, itask, iprint, icsave, lsave, isave, dsave)
-c Berend noted earlier format beyond column 72 
-      logical          lsave(4)
+     +                iwa, itask, iprint, icsave, lsavei, isave, dsave)
+c     Berend noted earlier format beyond column 72
+      integer          lsavei(4)
       integer          n, m, iprint, itask, icsave,
      +                 nbd(n), iwa(3*n), isave(44)
       double precision f, factr, pgtol, x(n), l(n), u(n), g(n),
 c
 c-jlm-jn
      +                 wa(2*m*n + 5*n + 11*m*m + 8*m), dsave(29)
- 
+      logical lsave(4)
 c     ************
 c
 c     Subroutine setulb
@@ -238,7 +238,30 @@ c
 c     ************
 c-jlm-jn 
       integer   lws,lr,lz,lt,ld,lxp,lwa,
-     +          lwy,lsy,lss,lwt,lwn,lsnd
+     +     lwy,lsy,lss,lwt,lwn,lsnd
+
+      if (lsavei(1) .eq. 1) then
+         lsave(1) = .true.
+      else
+         lsave(1) = .false.
+      endif
+      if (lsavei(2) .eq. 1) then
+         lsave(2) = .true.
+      else
+         lsave(2) = .false.
+      endif
+      
+      if (lsavei(3) .eq. 1) then
+         lsave(3) = .true.
+      else
+         lsave(3) = .false.
+      endif
+      
+      if (lsavei(4) .eq. 1) then
+         lsave(4) = .true.
+      else
+         lsave(4) = .false.
+      endif      
 
 cj      integer ia(10)
 
