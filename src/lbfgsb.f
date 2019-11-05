@@ -522,7 +522,7 @@ c
 c     ************
  
       logical          prjctd,cnstnd,boxed,updatd,wrk
-      character*3      word
+      character       word(3)
       integer          i,k,nintol,itfile,iback,nskip,
      +                 head,col,iter,itail,iupdat,
      +                 nseg,nfgv,info,ifun,
@@ -1102,10 +1102,10 @@ c     Save local variables.
       dsave(16) = dtd  
 
 cw 1001 format (//,'ITERATION ',i5)
- 1002 format
-     +  (/,'At iterate',i5,4x,'f= ',1p,d12.5,4x,'|proj g|= ',1p,d12.5)
- 1003 format (2(1x,i4),5x,'-',5x,'-',3x,'-',5x,'-',5x,'-',8x,'-',3x,
-     +        1p,2(1x,d10.3))
+cw 1002 format
+cw     +  (/,'At iterate',i5,4x,'f= ',1p,d12.5,4x,'|proj g|= ',1p,d12.5)
+cw 1003 format (2(1x,i4),5x,'-',5x,'-',3x,'-',5x,'-',5x,'-',8x,'-',3x,
+cw     +        1p,2(1x,d10.3))
 cw 1004 format ('  ys=',1p,e10.3,'  -gs=',1p,e10.3,' BFGS update SKIPPED')
 cw 1005 format (/, 
 cw     +' Singular triangular system detected;',/,
@@ -1869,7 +1869,7 @@ cw       write (6,2010)
          call intpr('--- exit CAUCHY---',-1, 0,0)
       endif
 cw 1010 format ('Cauchy X =  ',/,(4x,1p,6(1x,d11.4)))
- 2010 format (/,'---------------- exit CAUCHY----------------------',/)
+cw 2010 format (/,'---------------- exit CAUCHY----------------------',/)
 cw 3010 format (/,'---------------- CAUCHY entered-------------------')
 cw 4010 format ('Piece    ',i3,' --f1, f2 at start point ',1p,2(1x,d11.4))
 cw 4011 format (/,'Piece    ',i3,' --f1, f2 at start point ',
@@ -2959,7 +2959,7 @@ c======================= The end of prn1lb =============================
       subroutine prn2lb(n, x, f, g, iprint, itfile, iter, nfgv, nact, 
      +                  sbgnrm, nseg, word, iword, iback, stp, xstep)
  
-      character*3      word
+      character       word(3)
       integer          n, iprint, itfile, iter, nfgv, nact, nseg,
      +                 iword, iback
       double precision f, sbgnrm, stp, xstep, x(n), g(n)
@@ -3035,7 +3035,7 @@ c======================= The end of prn2lb =============================
      +                  cachyt, sbtime, lnscht)
  
 c      character*255     task
-      character*3      word
+      character       word(3)
       integer          n, iprint, info, itfile, iter, nfgv, nintol,
      +                 nskip, nact, nseg, iback, k, itask
       double precision f, sbgnrm, time, stp, xstep, cachyt, sbtime,
