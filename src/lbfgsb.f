@@ -522,7 +522,6 @@ c
 c     ************
  
       logical          prjctd,cnstnd,boxed,updatd,wrk
-      character       word(6)
       integer          i,k,nintol,iback,nskip,
      +                 head,col,iter,itail,iupdat,
      +                 nseg,nfgv,info,ifun,
@@ -584,7 +583,7 @@ c           for measuring running time:
          lnscht = 0
  
 c           'word' records the status of subspace solutions.
-         word = '---'
+c$$$         word = '---'
 
 c           'info' records the termination information.
          info = 0
@@ -603,7 +602,7 @@ c  ERROR return
          if ((itask .ge. 9) .and. (itask .le. 19)) then
             call prn3lb(n,x,f,itask,iprint,info,
      +                  iter,nfgv,nintol,nskip,nact,sbgnrm,
-     +                  zero,nseg,word,iback,stp,xstep,k,
+     +                  zero,nseg,iback,stp,xstep,k,
      +                  sbtime,lnscht)
             return
          endif
@@ -938,7 +937,7 @@ c        Compute the infinity norm of the projected (-)gradient.
 c        Print iteration information.
 
          call prn2lb(n,x,f,g,iprint,iter,nfgv,nact,
-     +               sbgnrm,nseg,word,iword,iback,stp,xstep)
+     +               sbgnrm,nseg,iword,iback,stp,xstep)
          goto 1000
       endif
  777  continue
@@ -1050,7 +1049,7 @@ cj    call timer(time2)
       time = time2 - time1
       call prn3lb(n,x,f,itask,iprint,info,
      +            iter,nfgv,nintol,nskip,nact,sbgnrm,
-     +            time,nseg,word,iback,stp,xstep,k,
+     +            time,nseg,iback,stp,xstep,k,
      +            sbtime,lnscht)
  1000 continue
 
@@ -2952,9 +2951,8 @@ cw     +        2x,'stepl',4x,'tstep',5x,'projg',8x,'f')
 c======================= The end of prn1lb =============================
 
       subroutine prn2lb(n, x, f, g, iprint, iter, nfgv, nact, 
-     +                  sbgnrm, nseg, word, iword, iback, stp, xstep)
+     +                  sbgnrm, nseg, iword, iback, stp, xstep)
  
-      character       word(6)
       integer          n, iprint, iter, nfgv, nact, nseg,
      +                 iword, iback
       double precision f, sbgnrm, stp, xstep, x(n), g(n)
@@ -2982,18 +2980,18 @@ c     ************
       integer i,imod
 
 c           'word' records the status of subspace solutions.
-      if (iword .eq. 0) then
-c                            the subspace minimization converged.
-         word = 'con'
-      else if (iword .eq. 1) then
-c                          the subspace minimization stopped at a bound.
-         word = 'bnd'
-      else if (iword .eq. 5) then
-c                             the truncated Newton step has been used.
-         word = 'TNT'
-      else
-         word = '---'
-      endif
+c$$$      if (iword .eq. 0) then
+c$$$c                            the subspace minimization converged.
+c$$$         word = 'con'
+c$$$      else if (iword .eq. 1) then
+c$$$c                          the subspace minimization stopped at a bound.
+c$$$         word = 'bnd'
+c$$$      else if (iword .eq. 5) then
+c$$$c                             the truncated Newton step has been used.
+c$$$         word = 'TNT'
+c$$$      else
+c$$$         word = '---'
+c$$$      endif
       if (iprint .ge. 99) then
 cw         write (6,*) 'LINE SEARCH',iback,' times; norm of step = ',xstep
          call intpr('LINE SEARCH iback=',-1, iback, 1)
@@ -3026,11 +3024,10 @@ c======================= The end of prn2lb =============================
 
       subroutine prn3lb(n, x, f, itask, iprint, info, 
      +                  iter, nfgv, nintol, nskip, nact, sbgnrm, 
-     +                  time, nseg, word, iback, stp, xstep, k, 
+     +                  time, nseg, iback, stp, xstep, k, 
      +                  sbtime, lnscht)
  
 c      character*255     task
-      character       word(6)
       integer          n, iprint, info, iter, nfgv, nintol,
      +                 nskip, nact, nseg, iback, k, itask
       double precision f, sbgnrm, time, stp, xstep, sbtime,
