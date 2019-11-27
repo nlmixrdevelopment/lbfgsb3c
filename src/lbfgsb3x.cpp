@@ -3,6 +3,7 @@
 #include <time.h>
 #include <Rmath.h>
 #include <Rcpp.h>
+#include <R_ext/Linpack.h>
 #define max2( a , b )  ( (a) > (b) ? (a) : (b) )
 
 using namespace Rcpp;
