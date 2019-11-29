@@ -964,7 +964,7 @@ c     Compute d=newx-oldx, r=newg-oldg, rr=y'y and dr=y's.
          r(i) = g(i) - r(i)
   42  continue
       rr = ddot(n,r,1,r,1)
-      if (abs(stp - one) < 1.0D-5) then  
+      if (stp .eq. one) then  
          dr = gd - gdold
          ddum = -gdold
       else
@@ -1636,7 +1636,7 @@ c     The indices of the nonzero components of d are now stored
 c       in iorder(1),...,iorder(nbreak) and iorder(nfree),...,iorder(n).
 c       The smallest of the nbreak breakpoints is in t(ibkmin)=bkmin.
  
-      if (abs(theta - one) > 1.0D-5) then
+      if (theta .ne. one) then
 c                   complete the initialization of p for theta not= one.
          call dscal(col,theta,p(col+1),1)
       endif
@@ -1721,7 +1721,7 @@ c           (if iter=2, initialize heap).
          
       dt = tj - tj0
  
-      if (abs(dt - zero) > 1.0D-5 .and. iprint .ge. 100) then
+      if (dt .ne. zero .and. iprint .ge. 100) then
 cw         write (6,4011) nseg,f1,f2
          call intpr('Piece ',-1, nseg, 1)
          call dblepr('f1 at start point =',-1, f1, 1)
@@ -2757,7 +2757,7 @@ c         task = 'FG_LNSRCH'
          ifun = ifun + 1
          nfgv = nfgv + 1
          iback = ifun - 1 
-         if (abs(stp - one) < 1.0D-5) then
+         if (stp .eq. one) then
             call dcopy(n,z,1,x,1)
          else
             do 41 i = 1, n
@@ -2849,7 +2849,7 @@ c                                             and the last column of SS:
          ss(j,col) = ddot(n,ws(1,pointr),1,d,1)
          pointr = mod(pointr,m) + 1
   51  continue
-      if (abs(stp - one) < 1.0D-5) then
+      if (stp .eq. one) then
          ss(col,col) = dtd
       else
          ss(col,col) = stp*stp*dtd
@@ -3542,20 +3542,20 @@ c
 c
             if ( nbd(k).eq.1 ) then          ! lower bounds only
                x(k) = max( l(k), xk + dk )
-               if (abs(x(k) - l(k)) < 1.0D-5 ) iword = 1
+               if (x(k) .eq. l(k)) iword = 1
             else 
 c     
                if ( nbd(k).eq.2 ) then       ! upper and lower bounds
                   xk   = max( l(k), xk + dk ) 
                   x(k) = min( u(k), xk )
-                  if (abs(x(k)-l(k))<1D-5.or.abs(x(k)-u(k))<1D-5) then
+                  if (x(k) .eq. l(k) .or. x(k) .eq. u(k)) then
                      iword = 1
                   endif
                else
 c
                   if ( nbd(k).eq.3 ) then    ! upper bounds only
                      x(k) = min( u(k), xk + dk )
-                     if ( abs(x(k)-u(k))<1D-5 ) iword = 1
+                     if ( x(k) .eq. u(k)) iword = 1
                   end if 
                end if
             end if
@@ -3894,10 +3894,10 @@ c     +   task = 'WARNING: ROUNDING ERRORS PREVENT PROGRESS'
       if (brackt .and. stmax - stmin .le. xtol*stmax) 
 c     +   task = 'WARNING: XTOL TEST SATISFIED'
      +     itask = 26
-      if (abs(stp -stpmax)<1D-5 .and. f .le. ftest .and. g .le. gtest) 
+      if (stp .eq. stpmax .and. f .le. ftest .and. g .le. gtest) 
 c     +   task = 'WARNING: STP = STPMAX'
      +     itask = 24
-      if (abs(stp-stpmin)<1D-5 .and. (f .gt. ftest .or. g .ge. gtest)) 
+      if (stp .eq. stpmin .and. (f .gt. ftest .or. g .ge. gtest)) 
 c     +   task = 'WARNING: STP = STPMIN'
      +     itask = 25
 c     Test for convergence.
