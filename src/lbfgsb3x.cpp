@@ -27,6 +27,8 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
 			  double atol, double rtol, double *g){
   // Optim compatible interface
   int itask= 2;
+  // JN 191222 initialize Fmin just in case -- need better value however
+  *Fmin=1.0E+50;
   // *Fmin=;
   double *lastx = new double[n];
   std::copy(&x[0],&x[0]+n,&lastx[0]);
@@ -75,7 +77,9 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
   taskList[27] = "Maximum number of iterations reached";
   while (true){
     if (trace >= 2){
-      Rprintf("\n================================================================================\nBefore call f=%f task number %d, or \"%s\"\n", *Fmin, itask, (as<std::string>(taskList[itask-1])).c_str());
+      //Rprintf("\n================================================================================\nBefore call f=%f task number %d, or \"%s\"\n", *Fmin, itask, (as<std::string>(taskList[itask-1])).c_str());
+Rprintf("\n================================================================================\nBefore call f=%e task number %d, or \"%s\"\n", *Fmin, itask, (as<std::string>(taskList[itask-1])).c_str());
+
     }
     if (itask==3) doExit=1;
     setulb_(&n, &lmm, x, lower, upper, nbd, Fmin, g, &factr, &pgtol,
@@ -95,7 +99,12 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
 	print(xv);
       }
       // Calculate f and g
-      Fmin[0] = fn(n, x, ex);
+//      Fmin[0] = fn(n, x, ex);  //JN chg to try pointer
+      Rprintf("Trying call |*Fmin =  fn(n, x, ex);|\n");
+      *Fmin =  fn(n, x, ex);
+      Rprintf("Call returned\n");
+      
+      // JN 191222 ?? is this correct syntax to get function value
       fncount[0]++;
       gr(n, x, g, ex);
       grcount[0]++;
