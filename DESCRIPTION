@@ -23,7 +23,8 @@ Description: Interfacing to Nocedal et al. L-BFGS-B.3.0
 License: GPL-2
 Depends: R (>= 3.0.2)
 Imports: Rcpp (>= 0.12.3), numDeriv, methods
-Suggests: optimx, microbenchmark, testthat, knitr, pkgbuild, RcppArmadillo, rmarkdown
+Suggests: optimx, microbenchmark, testthat, knitr, pkgbuild,
+        RcppArmadillo, rmarkdown
 LinkingTo: Rcpp (>= 0.12.3), RcppArmadillo
 Encoding: UTF-8
 VignetteBuilder: knitr
@@ -35,3 +36,6 @@ Author: Matthew L Fidler [aut, cre],
   Richard Byrd [aut],
   Jorge Nocedal [aut],
   Jose Luis Morales [aut]
+Packaged: 2019-11-29 14:47:27 UTC; matt
+Repository: CRAN
+Date/Publication: 2019-11-30 06:50:03 UTC

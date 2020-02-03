@@ -522,7 +522,6 @@ c
 c     ************
  
       logical          prjctd,cnstnd,boxed,updatd,wrk
-      character       word(3)
       integer          i,k,nintol,iback,nskip,
      +                 head,col,iter,itail,iupdat,
      +                 nseg,nfgv,info,ifun,
@@ -584,7 +583,7 @@ c           for measuring running time:
          lnscht = 0
  
 c           'word' records the status of subspace solutions.
-         word = '---'
+c$$$         word = '---'
 
 c           'info' records the termination information.
          info = 0
@@ -601,10 +600,7 @@ c        Check the input arguments for errors.
          call errclb(n,m,factr,l,u,nbd,itask,info,k)
 c  ERROR return
          if ((itask .ge. 9) .and. (itask .le. 19)) then
-            call prn3lb(n,x,f,itask,iprint,info,
-     +                  iter,nfgv,nintol,nskip,nact,sbgnrm,
-     +                  zero,nseg,word,iback,stp,xstep,k,
-     +                  sbtime,lnscht)
+            call prn3lb(n,x,f,itask,iprint,info,k)
             return
          endif
 
@@ -937,8 +933,8 @@ c        Compute the infinity norm of the projected (-)gradient.
  
 c        Print iteration information.
 
-         call prn2lb(n,x,f,g,iprint,iter,nfgv,nact,
-     +               sbgnrm,nseg,word,iword,iback,stp,xstep)
+         call prn2lb(f,iprint,iter,
+     +               sbgnrm,iback,xstep)
          goto 1000
       endif
  777  continue
@@ -1048,10 +1044,7 @@ c -------------------- the end of the loop -----------------------------
 cj    call timer(time2)
       time2 = 0.0d0
       time = time2 - time1
-      call prn3lb(n,x,f,itask,iprint,info,
-     +            iter,nfgv,nintol,nskip,nact,sbgnrm,
-     +            time,nseg,word,iback,stp,xstep,k,
-     +            sbtime,lnscht)
+      call prn3lb(n,x,f,itask,iprint,info,k)
  1000 continue
 
 c     Save local variables.
@@ -1972,8 +1965,8 @@ c
 c     ************
 
       integer          i
-      double precision one,zero
-      parameter        (one=1.0d0,zero=0.0d0)
+      double precision zero
+      parameter        (zero=0.0d0)
 
 c     Check the input arguments for errors.
 
@@ -2157,8 +2150,8 @@ c     ************
       integer          m2,ipntr,jpntr,iy,is,jy,js,is1,js1,k1,i,k,
      +                 col2,pbegin,pend,dbegin,dend,upcl
       double precision ddot,temp1,temp2,temp3,temp4
-      double precision one,zero
-      parameter        (one=1.0d0,zero=0.0d0)
+      double precision zero
+      parameter        (zero=0.0d0)
 
 c     Form the lower triangular part of
 c               WN1 = [Y' ZZ'Y   L_a'+R_z'] 
@@ -2871,7 +2864,7 @@ c======================= The end of matupd =============================
 
       subroutine prn1lb(n, m, l, u, x, iprint,  epsmch)
  
-      integer n, m, iprintr
+      integer n, m
       double precision epsmch, x(n), l(n), u(n)
 
 c     ************
@@ -2895,7 +2888,7 @@ c
 c
 c     ************
 
-      integer i
+c$$$      integer i
       integer nprt
 
 c  limit output to 1st 5 elements
@@ -2951,13 +2944,11 @@ cw     +        2x,'stepl',4x,'tstep',5x,'projg',8x,'f')
 
 c======================= The end of prn1lb =============================
 
-      subroutine prn2lb(n, x, f, g, iprint, iter, nfgv, nact, 
-     +                  sbgnrm, nseg, word, iword, iback, stp, xstep)
+      subroutine prn2lb(f, iprint, iter, 
+     +                  sbgnrm, iback, xstep)
  
-      character       word(3)
-      integer          n, iprint, iter, nfgv, nact, nseg,
-     +                 iword, iback
-      double precision f, sbgnrm, stp, xstep, x(n), g(n)
+      integer iprint, iter, iback
+      double precision f, sbgnrm, xstep
 
 c     ************
 c
@@ -2979,21 +2970,21 @@ c
 c
 c     ************
 
-      integer i,imod
+      integer imod
 
 c           'word' records the status of subspace solutions.
-      if (iword .eq. 0) then
-c                            the subspace minimization converged.
-         word = 'con'
-      else if (iword .eq. 1) then
-c                          the subspace minimization stopped at a bound.
-         word = 'bnd'
-      else if (iword .eq. 5) then
-c                             the truncated Newton step has been used.
-         word = 'TNT'
-      else
-         word = '---'
-      endif
+c$$$      if (iword .eq. 0) then
+c$$$c                            the subspace minimization converged.
+c$$$         word = 'con'
+c$$$      else if (iword .eq. 1) then
+c$$$c                          the subspace minimization stopped at a bound.
+c$$$         word = 'bnd'
+c$$$      else if (iword .eq. 5) then
+c$$$c                             the truncated Newton step has been used.
+c$$$         word = 'TNT'
+c$$$      else
+c$$$         word = '---'
+c$$$      endif
       if (iprint .ge. 99) then
 cw         write (6,*) 'LINE SEARCH',iback,' times; norm of step = ',xstep
          call intpr('LINE SEARCH iback=',-1, iback, 1)
@@ -3024,17 +3015,11 @@ cw 3001 format(2(1x,i4),2(1x,i5),2x,a3,1x,i4,1p,2(2x,d7.1),1p,2(1x,d10.3))
 
 c======================= The end of prn2lb =============================
 
-      subroutine prn3lb(n, x, f, itask, iprint, info, 
-     +                  iter, nfgv, nintol, nskip, nact, sbgnrm, 
-     +                  time, nseg, word, iback, stp, xstep, k, 
-     +                  sbtime, lnscht)
+      subroutine prn3lb(n, x, f, itask, iprint, info, k)
  
 c      character*255     task
-      character       word(3)
-      integer          n, iprint, info, iter, nfgv, nintol,
-     +                 nskip, nact, nseg, iback, k, itask
-      double precision f, sbgnrm, time, stp, xstep, sbtime,
-     +                 lnscht, x(n)
+      integer          n, iprint, info,  k, itask
+      double precision f, x(n)
 
 c     ************
 c
@@ -3057,7 +3042,7 @@ c
 c
 c     ************
 
-      integer i
+c$$$      integer i
       integer nprt
 
 c      if (task(1:5) .eq. 'ERROR') goto 999
@@ -3274,8 +3259,8 @@ c     ************
 
       integer i
       double precision gi
-      double precision one,zero
-      parameter        (one=1.0d0,zero=0.0d0)
+      double precision zero
+      parameter        (zero=0.0d0)
 
       sbgnrm = zero
       do 15 i = 1, n
@@ -3557,18 +3542,20 @@ c
 c
             if ( nbd(k).eq.1 ) then          ! lower bounds only
                x(k) = max( l(k), xk + dk )
-               if ( x(k).eq.l(k) ) iword = 1
+               if (x(k) .eq. l(k)) iword = 1
             else 
 c     
                if ( nbd(k).eq.2 ) then       ! upper and lower bounds
                   xk   = max( l(k), xk + dk ) 
                   x(k) = min( u(k), xk )
-                  if ( x(k).eq.l(k) .or. x(k).eq.u(k) ) iword = 1
+                  if (x(k) .eq. l(k) .or. x(k) .eq. u(k)) then
+                     iword = 1
+                  endif
                else
 c
                   if ( nbd(k).eq.3 ) then    ! upper bounds only
                      x(k) = min( u(k), xk + dk )
-                     if ( x(k).eq.u(k) ) iword = 1
+                     if ( x(k) .eq. u(k)) iword = 1
                   end if 
                end if
             end if
@@ -4194,7 +4181,7 @@ c        to infinity in the direction of the step.
          p = (gamma - dp) + theta
          q = (gamma + (dx - dp)) + gamma
          r = p/q
-         if (r .lt. zero .and. gamma .ne. zero) then
+         if (r .lt. zero .and. abs(gamma-zero) > 1D-5) then
             stpc = stp + r*(stx - stp)
          else if (stp .gt. stx) then
             stpc = stpmax
