@@ -123,119 +123,6 @@ needing to examine how the optimization has been carried out.
 
 We recommend using the `lbfsgb3c()` call for most uses.
 
-## Comparison with optim::L-BFGS-B
-
-The new Fortran package claims better performance on bounds-constrained problems. Below we
-present two fairly simple tests, which unfortunately do not show any advantage. We welcome 
-examples showing differences, either better or not. Note that we use the call that returns 
-expanded information, but we do not interpret that here. See the documentation in the source
-Fortran for an explanation of the data returned in object `info`.
-
-As the package `lbfgsb3c` is intended to replace package `lbfgsb3`, and the more current 
-package is used by recent `optimx` versions, we have to test for the version of `optimx`.
-This unfortunately gives a rather messy output from Rmarkdown.
-
-```{r, bt, echo=TRUE}
-# ref BT.RES in Nash and Walker-Smith (1987)
-
-bt.f<-function(x){
- sum(x*x)
-}
-
-bt.g<-function(x){
-  gg<-2.0*x
-}
-
-bt.badsetup<-function(n){
-   x<-rep(0,n)
-   lo<-rep(0,n)
-   up<-lo # to get arrays set
-   bmsk<-rep(1,n)
-   bmsk[(trunc(n/2)+1)]<-0
-   for (i in 1:n) { 
-      x[i]<-2.2*i-n
-      lo[i]<-1.0*(i-1)*(n-1)/n
-      up[i]<-1.0*i*(n+1)/n
-   }
-   result<-list(x=x, lower=lo, upper=up, bdmsk=bmsk)
-}
-
-bt.setup0<-function(n){
-   x<-rep(0,n)
-   lo<-rep(0,n)
-   up<-lo # to get arrays set
-   bmsk<-rep(1,n)
-   bmsk[(trunc(n/2)+1)]<-0
-   for (i in 1:n) { 
-      lo[i]<-1.0*(i-1)*(n-1)/n
-      up[i]<-1.0*i*(n+1)/n
-   }
-   x<-0.5*(lo+up)
-   result<-list(x=x, lower=lo, upper=up, bdmsk=bmsk)
-}
-
-## library(lbfgsb3c)
-library(optimx)
-# sessionInfo()
-oppv<- packageVersion("optimx")
-cat("optimx version is ", as.character(oppv),"\n")
-if (as.character(oppv) < '2019-6.14' ) {
-  cat("Note -- Older version of optimx in use\n")
-meths <- c("L-BFGS-B", "Rvmmin", "Rcgmin", "Rtnmin")
-nn <- 4
-goody <- bt.setup0(nn)
-lo <- goody$lower
-up <- goody$upper
-x0 <- goody$x
-goody
-## optim()
-## Put trace=3 to get full details
-solgood <- opm(x0, bt.f, bt.g, lower=lo, upper=up, method=meths, control=list(trace=0))
-print(solgood)
-print(summary(solgood, order=value))
-cat("Result for lbfgsb3c\n")
-library(lbfgsb3c)
-sollbcgood <- lbfgsb3c(x0, bt.f, bt.g, lower=lo, upper=up)
-sollbcgood
-bady <- bt.badsetup(nn)
-lo <- bady$lower
-up <- bady$upper
-x0 <- bady$x
-bady # This has x outside bounds, but method corrects. 
-## Should we notify user in a more aggressive fashion?
-## optim()
-## Put trace=3 to get full details
-solbad0 <- opm(x0, bt.f, bt.g, lower=lo, upper=up, method=meths, control=list(trace=0))
-print(summary(solbad0, order=value))
-sollbcbad <- lbfgsb3c(x0, bt.f, bt.g, lower=lo, upper=up)
-sollbcbad
-} else {
-## Following only works with optimx >= 2019-6.14 since lbfgsb3c not present beforehand
-meths <- c("L-BFGS-B", "lbfgsb3c", "lbfgsb3", "Rvmmin", "Rcgmin", "Rtnmin")
-nn <- 4
-goody <- bt.setup0(nn)
-lo <- goody$lower
-up <- goody$upper
-x0 <- goody$x
-goody
-## optim()
-## Put trace=3 to get full details
-solgood <- opm(x0, bt.f, bt.g, lower=lo, upper=up, method=meths, control=list(trace=0))
-print(summary(solgood, order=value))
-bady <- bt.badsetup(nn)
-lo <- bady$lower
-up <- bady$upper
-x0 <- bady$x
-bady # This has x outside bounds, but method corrects. 
-## Should we notify user in a more aggressive fashion?
-## optim()
-## Put trace=3 to get full details
-solbad0 <- opm(x0, bt.f, bt.g, lower=lo, upper=up, method=meths, control=list(trace=0))
-print(summary(solbad0, order=value))
-}
-
-```
-
 ### Candlestick function
 
 ```{r, candlestick}
@@ -361,7 +248,9 @@ extensions to interface compiled code with this function, see
 [L-BFGS-B](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Optimization),
 it is sometimes more convenient to use your own compiled code.
 
-The following example shows how this is done using the file `jrosen.f`.
+The following example shows how this is done using the file `jrosen.f`. We have unfortunately
+found that compilation is not always portable across systems, so this example is 
+presented without execution.
 
 ```
        subroutine rosen(n, x, fval)
