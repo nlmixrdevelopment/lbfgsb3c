@@ -7,17 +7,49 @@
 \alias{lbfgsb3x}
 \title{Interfacing wrapper for the Nocedal - Morales LBFGSB3 (Fortran) limited memory BFGS solver.}
 \usage{
-lbfgsb3c(par, fn, gr = NULL, lower = -Inf, upper = Inf,
-  control = list(), ..., rho = NULL)
+lbfgsb3c(
+  par,
+  fn,
+  gr = NULL,
+  lower = -Inf,
+  upper = Inf,
+  control = list(),
+  ...,
+  rho = NULL
+)
 
-lbfgsb3(par, fn, gr = NULL, lower = -Inf, upper = Inf,
-  control = list(), ..., rho = NULL)
+lbfgsb3(
+  par,
+  fn,
+  gr = NULL,
+  lower = -Inf,
+  upper = Inf,
+  control = list(),
+  ...,
+  rho = NULL
+)
 
-lbfgsb3f(par, fn, gr = NULL, lower = -Inf, upper = Inf,
-  control = list(), ..., rho = NULL)
+lbfgsb3f(
+  par,
+  fn,
+  gr = NULL,
+  lower = -Inf,
+  upper = Inf,
+  control = list(),
+  ...,
+  rho = NULL
+)
 
-lbfgsb3x(par, fn, gr = NULL, lower = -Inf, upper = Inf,
-  control = list(), ..., rho = NULL)
+lbfgsb3x(
+  par,
+  fn,
+  gr = NULL,
+  lower = -Inf,
+  upper = Inf,
+  control = list(),
+  ...,
+  rho = NULL
+)
 }
 \arguments{
 \item{par}{A parameter vector which gives the initial guesses to
