@@ -154,6 +154,11 @@ print(x0)
 c2l1 <- lbfgsb3c(x0, cstick.f, cstick.g, lower=lo, upper=up)
 c2l1
 
+## meths <- c("L-BFGS-B", "lbfgsb3c", "Rvmmin", "Rcgmin", "Rtnmin")
+## require(optimx)
+
+## cstick2a <- opm(x0, cstick.f, cstick.g, method=meths, upper=up, lower=lo, control=list(kkt=FALSE))
+## print(summary(cstick2a, par.select=1:2, order=value))
 lo <- c(4, 4)
 ## c2ob <- opm(x0, cstick.f, cstick.g, lower=lo, upper=up, method=meths, control=list(trace=0))
 ## print(summary(c2ob, order=value))
