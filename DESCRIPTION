@@ -23,7 +23,7 @@ Description: Interfacing to Nocedal et al. L-BFGS-B.3.0
 License: GPL-2
 Depends: R (>= 3.0.2)
 Imports: Rcpp (>= 0.12.3), numDeriv, methods
-Suggests: optimx, microbenchmark, testthat, knitr, pkgbuild
+Suggests: optimx, microbenchmark, testthat, knitr, pkgbuild, rmarkdown
 LinkingTo: Rcpp (>= 0.12.3), RcppArmadillo
 Encoding: UTF-8
 VignetteBuilder: knitr
