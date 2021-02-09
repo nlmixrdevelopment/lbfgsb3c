@@ -21,7 +21,7 @@ Description: Interfacing to Nocedal et al. L-BFGS-B.3.0
         and source for details).  This package also adds more stopping criteria as well 
         as allowing the adjustment of more tolerances.
 License: GPL-2
-Depends: R (>= 3.0.2)
+Depends: R (>= 3.6)
 Imports: Rcpp (>= 0.12.3), numDeriv, methods
 Suggests: optimx, microbenchmark, testthat, knitr, pkgbuild, rmarkdown, RcppArmadillo
 LinkingTo: Rcpp (>= 0.12.3), RcppArmadillo
