@@ -291,16 +291,16 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   case 7:
   case 8:
   case 27:
-    ret["convergence"]=0;
+    ret["convergence"]=IntegerVector::create(0);
     break;
   case 28:
-    ret["convergence"]=1;
+    ret["convergence"]=IntegerVector::create(1);
     break;
   case 23:
   case 24:
   case 25:
   case 26:
-    ret["convergence"] = 51;
+    ret["convergence"] = IntegerVector::create(51);
     break;
   case 9:
   case 10:
@@ -313,8 +313,10 @@ Rcpp::List lbfgsb3cpp(NumericVector par, Function fn, Function gr, NumericVector
   case 17:
   case 18:
   case 19:
-    ret["convergence"] = 52;
+    ret["convergence"] = IntegerVector::create(52);
     break;
+  default:
+    ret["convergence"] = IntegerVector::create(NA_INTEGER);
   }
   CharacterVector taskList(28);
   taskList[0]="NEW_X";
