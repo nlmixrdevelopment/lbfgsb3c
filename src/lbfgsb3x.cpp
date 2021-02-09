@@ -24,7 +24,7 @@ extern "C" void lbfgsb3C_(int n, int lmm, double *x, double *lower,
 			  optimgr gr, int *fail, void *ex, double factr,
 			  double pgtol, int *fncount, int *grcount,
 			  int maxit, char *msg, int trace, int iprint,
-			  double atol, double rtol, double *g){
+			  double atol, double rtol, double *g) {
   // Optim compatible interface
   int itask= 2;
   // *Fmin=;
