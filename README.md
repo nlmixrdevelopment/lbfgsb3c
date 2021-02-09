@@ -1,5 +1,4 @@
-[![Travis-CI Build Status](https://travis-ci.org/nlmixrdevelopment/lbfgsb3c.svg?branch=master)](https://travis-ci.org/nlmixrdevelopment/lbfgsb3c)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/nlmixrdevelopment/lbfgsb3c?branch=master&svg=true)](https://ci.appveyor.com/project/nlmixrdevelopment/lbfgsb3c)
+[![R-CMD-check](https://github.com/nlmixrdevelopment/lbfgsb3c/workflows/R-CMD-check/badge.svg)](https://github.com/nlmixrdevelopment/lbfgsb3c/actions)
 [![CRAN total downloads](https://cranlogs.r-pkg.org/badges/grand-total/lbfgsb3c)](https://cran.r-project.org/package=lbfgsb3c)
 [![CRAN total downloads](https://cranlogs.r-pkg.org/badges/lbfgsb3c)](https://cran.r-project.org/package=lbfgsb3c)
 
