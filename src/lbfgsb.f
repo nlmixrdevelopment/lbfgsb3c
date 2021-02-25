@@ -4169,7 +4169,7 @@ c        to infinity in the direction of the step.
          p = (gamma - dp) + theta
          q = (gamma + (dx - dp)) + gamma
          r = p/q
-         if (r .lt. zero .and. abs(gamma-zero) > 1D-5) then
+         if (r .lt. zero .and. gamma .ne. zero) then
             stpc = stp + r*(stx - stp)
          else if (stp .gt. stx) then
             stpc = stpmax
